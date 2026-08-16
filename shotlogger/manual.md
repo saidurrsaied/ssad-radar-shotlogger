@@ -111,7 +111,7 @@ highlighted in bold.
 | Column | Meaning |
 | --- | --- |
 | # | Sequence number, the order to record in |
-| Class | `ped`, `bg`, `cyc`, `sct` |
+| Class | whatever the loaded plan defines — see below |
 | Geometry | Trajectory, or for background the disturbance source |
 | Dist | Distance marker on the floor |
 | Speed | `slow`, `normal`, `fast`, or `na` for background |
@@ -125,6 +125,35 @@ highlighted in bold.
 
 Hover any row to see its note. Use **Show** to filter by class, or tick
 **Remaining only** to hide finished rows.
+
+### Classes you will meet
+
+Classes come from the plan, so they differ between locations. The indoor plan
+uses two; the outdoor plan uses nine.
+
+| | |
+| --- | --- |
+| `bg` | background — no target in the beam |
+| `ped` | one person walking |
+| `ped2` `ped3` | two or three people together |
+| `cane` | one person using a walking cane |
+| `canegrp` | cane user with someone alongside |
+| `cyc` | bicycle |
+| `sct` | e-scooter |
+| `cross` | sideways pass, `lr` left-to-right or `rl` right-to-left |
+
+Two of these behave in ways worth expecting rather than being surprised by.
+
+The sensor has one receive antenna and no angle resolution, so it cannot separate
+people standing or walking side by side. `ped2` and `ped3` are not "pedestrian,
+twice" — they are one superposed signal that looks quite different. That is why
+they are separate classes and must not be filed as `ped`.
+
+`cross` passes will look nearly empty on the live plot. That is the physics, not a
+fault: the sensor measures radial velocity, and a target moving across the beam
+has almost none. They are recorded so the model learns that someone walking past
+is not someone approaching. Record them as planned even though they look like
+nothing.
 
 ### Quality notes
 
@@ -207,7 +236,7 @@ constant size and look finished.
     <output folder>/
       shotlist_working.csv    the plan plus your progress
       _logbook.csv            one row per attempt, including rejected and failed
-      bg/  ped/  cyc/  sct/   recordings, one folder per class
+      bg/  ped/  cyc/  ...    recordings, one folder per class in the plan
 
 `shotlist_working.csv` is the live progress file. The original plan CSV is never
 modified.

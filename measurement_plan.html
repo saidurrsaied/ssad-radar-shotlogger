@@ -379,6 +379,12 @@
     </table>
   </div>
 
+  <div class="note gate">
+    <p class="note-h">The range is provisional &mdash; it will grow before recording starts</p>
+    <p>Everything above is measured and correct, but 1.00&ndash;6.04 m was chosen around <em>this room</em>. It is too short for the outdoor half of the campaign: dwell time is set by the range span, so at 6 m a cyclist at 5 m/s is in the beam for about <strong>one second</strong> &mdash; roughly a single pedal cycle, when pedal cadence is the entire feature that identifies a cyclist. A bench session will extend the range before any recording begins, and the configuration is shared by every location.</p>
+    <p style="margin-top:10px">This indoor plan is unaffected. The room is only six metres deep, so the extra range simply measures the far wall &mdash; static clutter, removed by the same mean subtraction that removes the rest of the room. The floor markers and the shot list stay exactly as written. What will change is the number in the table above, and its sha256.</p>
+  </div>
+
   <div class="prose">
     <p>Two consequences worth carrying into the session. The dataset shrinks to about <strong>0.41 GB</strong> for the full 48 minutes of beam-on, so disk space is no longer a real constraint. And throughput is now a settled question rather than a pilot risk &mdash; the pilot's job is to confirm the range and mounting suit the room, not to discover whether the link keeps up.</p>
     <p>The configuration is written once by <code>tools/freeze_session_config.py</code> into <code>config/session_config.json</code>, and the Shot Logger verifies every recording against it. Do not edit that file by hand; the loader refuses a file that no longer round-trips through the parser, which is what a hand edit usually produces.</p>

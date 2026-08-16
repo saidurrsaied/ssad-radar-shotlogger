@@ -44,11 +44,11 @@ sudo apt update
 sudo apt install python3-venv libxcb-cursor0
 ```
 
-**2. Get the project.** Copy the project folder from a teammate, or unzip it. It
-is about 7 MB without the virtual environment. Then:
+**2. Get the project.**
 
 ```bash
-cd SSAD
+git clone https://github.com/saidurrsaied/ssad-radar-shotlogger.git
+cd ssad-radar-shotlogger
 python3 -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
@@ -157,6 +157,10 @@ The `frozen config sha256` must be **the same on every machine**. If yours
 differs, you have a different configuration and your recordings cannot be mixed
 with everyone else's.
 
+The exact value above is illustrative: it changes if the configuration is
+re-frozen after the bench check below. What matters is that everyone's matches,
+not that it matches this README.
+
 You can also run the test suite, which needs no hardware and no sensor:
 
 ```bash
@@ -201,15 +205,23 @@ saving a session elsewhere, troubleshooting — is in the built-in guide. Press
 ## What is in the project
 
 ```
+README.md                    this file -- install and first run
+BENCH_CHECK.md               hardware procedure, run once before any recording
+measurement_plan.html        the indoor measurement plan, with the reasoning
 config/session_config.json   the frozen sensor configuration, shared by everyone
 plans/<location>.yaml        plan definition, one per environment
 plans/<location>.csv         generated shot list
 shotlogger/                  the application
-shotlogger/manual.md         the user guide (rendered in-app)
-tools/                       generators, install check, campaign report
-tests/                       unit tests, no hardware required
-agentContext/                design notes
+shotlogger/manual.md         the user guide (rendered in-app, press F1)
+tools/                       config freeze, shot list generator, install and
+                             bench checks, campaign report
+tests/                       58 tests, no hardware required
 ```
+
+Recordings are **not** in the repo and should stay that way -- `*.h5`,
+`shotlist_working.csv` and `_logbook.csv` are gitignored. A single 60 s take is
+tens of megabytes. Use the app's "Save session to..." to move a finished session
+somewhere shared.
 
 Useful commands:
 
