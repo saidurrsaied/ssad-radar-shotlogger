@@ -1,0 +1,101 @@
+seq,location,class,geometry,distance,speed,subject,take,filename,seconds,note
+1,locA_indoor_3wall,bg,empty,6m,na,p0,1,bg_empty_6m_na_p0_take1.h5,60,"Room empty, doors shut, nobody moving. Baseline clutter."
+2,locA_indoor_3wall,bg,empty,6m,na,p0,2,bg_empty_6m_na_p0_take2.h5,60,"Room empty, doors shut, nobody moving. Baseline clutter."
+3,locA_indoor_3wall,bg,empty,6m,na,p0,3,bg_empty_6m_na_p0_take3.h5,60,"Room empty, doors shut, nobody moving. Baseline clutter."
+4,locA_indoor_3wall,bg,empty,6m,na,p0,4,bg_empty_6m_na_p0_take4.h5,60,"Room empty, doors shut, nobody moving. Baseline clutter."
+5,locA_indoor_3wall,bg,empty,6m,na,p0,5,bg_empty_6m_na_p0_take5.h5,60,"Room empty, doors shut, nobody moving. Baseline clutter."
+6,locA_indoor_3wall,bg,empty,6m,na,p0,6,bg_empty_6m_na_p0_take6.h5,60,"Room empty, doors shut, nobody moving. Baseline clutter."
+7,locA_indoor_3wall,bg,hvac,6m,na,p0,1,bg_hvac_6m_na_p0_take1.h5,60,"Room empty, ventilation/AC running."
+8,locA_indoor_3wall,bg,hvac,6m,na,p0,2,bg_hvac_6m_na_p0_take2.h5,60,"Room empty, ventilation/AC running."
+9,locA_indoor_3wall,bg,hvac,6m,na,p0,3,bg_hvac_6m_na_p0_take3.h5,60,"Room empty, ventilation/AC running."
+10,locA_indoor_3wall,bg,hvac,6m,na,p0,4,bg_hvac_6m_na_p0_take4.h5,60,"Room empty, ventilation/AC running."
+11,locA_indoor_3wall,bg,trolley,4m,na,p0,1,bg_trolley_4m_na_p0_take1.h5,30,Lab trolley or office chair rolled through the beam.
+12,locA_indoor_3wall,bg,trolley,4m,na,p0,2,bg_trolley_4m_na_p0_take2.h5,30,Lab trolley or office chair rolled through the beam.
+13,locA_indoor_3wall,bg,trolley,4m,na,p0,3,bg_trolley_4m_na_p0_take3.h5,30,Lab trolley or office chair rolled through the beam.
+14,locA_indoor_3wall,bg,trolley,4m,na,p0,4,bg_trolley_4m_na_p0_take4.h5,30,Lab trolley or office chair rolled through the beam.
+15,locA_indoor_3wall,bg,trolley,4m,na,p0,5,bg_trolley_4m_na_p0_take5.h5,30,Lab trolley or office chair rolled through the beam.
+16,locA_indoor_3wall,bg,door,6m,na,p0,1,bg_door_6m_na_p0_take1.h5,30,Door at the open end opened and closed.
+17,locA_indoor_3wall,bg,door,6m,na,p0,2,bg_door_6m_na_p0_take2.h5,30,Door at the open end opened and closed.
+18,locA_indoor_3wall,bg,door,6m,na,p0,3,bg_door_6m_na_p0_take3.h5,30,Door at the open end opened and closed.
+19,locA_indoor_3wall,bg,door,6m,na,p0,4,bg_door_6m_na_p0_take4.h5,30,Door at the open end opened and closed.
+20,locA_indoor_3wall,bg,umbrella,3m,na,p0,1,bg_umbrella_3m_na_p0_take1.h5,30,"Umbrella opened, closed, rotated."
+21,locA_indoor_3wall,bg,umbrella,3m,na,p0,2,bg_umbrella_3m_na_p0_take2.h5,30,"Umbrella opened, closed, rotated."
+22,locA_indoor_3wall,bg,umbrella,3m,na,p0,3,bg_umbrella_3m_na_p0_take3.h5,30,"Umbrella opened, closed, rotated."
+23,locA_indoor_3wall,bg,standing,2m,na,p0,1,bg_standing_2m_na_p0_take1.h5,60,Subject stands still on the axis. Breathing only.
+24,locA_indoor_3wall,bg,standing,2m,na,p0,2,bg_standing_2m_na_p0_take2.h5,60,Subject stands still on the axis. Breathing only.
+25,locA_indoor_3wall,bg,standing,2m,na,p0,3,bg_standing_2m_na_p0_take3.h5,60,Subject stands still on the axis. Breathing only.
+26,locA_indoor_3wall,bg,standing,4m,na,p0,1,bg_standing_4m_na_p0_take1.h5,60,Subject stands still on the axis. Breathing only.
+27,locA_indoor_3wall,bg,standing,4m,na,p0,2,bg_standing_4m_na_p0_take2.h5,60,Subject stands still on the axis. Breathing only.
+28,locA_indoor_3wall,bg,standing,4m,na,p0,3,bg_standing_4m_na_p0_take3.h5,60,Subject stands still on the axis. Breathing only.
+29,locA_indoor_3wall,bg,standing,6m,na,p0,1,bg_standing_6m_na_p0_take1.h5,60,Subject stands still on the axis. Breathing only.
+30,locA_indoor_3wall,bg,standing,6m,na,p0,2,bg_standing_6m_na_p0_take2.h5,60,Subject stands still on the axis. Breathing only.
+31,locA_indoor_3wall,bg,operator,1m,na,p0,1,bg_operator_1m_na_p0_take1.h5,30,"Operator moves behind the sensor, beam otherwise clear."
+32,locA_indoor_3wall,bg,operator,1m,na,p0,2,bg_operator_1m_na_p0_take2.h5,30,"Operator moves behind the sensor, beam otherwise clear."
+33,locA_indoor_3wall,bg,fan,4m,na,p0,1,bg_fan_4m_na_p0_take1.h5,60,"Rotating fan in the beam, target-free."
+34,locA_indoor_3wall,bg,fan,4m,na,p0,2,bg_fan_4m_na_p0_take2.h5,60,"Rotating fan in the beam, target-free."
+35,locA_indoor_3wall,ped,approach,6m,slow,p1,1,ped_approach_6m_slow_p1_take1.h5,25,
+36,locA_indoor_3wall,ped,approach,6m,normal,p1,1,ped_approach_6m_normal_p1_take1.h5,20,
+37,locA_indoor_3wall,ped,approach,6m,normal,p1,2,ped_approach_6m_normal_p1_take2.h5,20,
+38,locA_indoor_3wall,ped,approach,6m,normal,p1,3,ped_approach_6m_normal_p1_take3.h5,20,
+39,locA_indoor_3wall,ped,approach,6m,fast,p1,1,ped_approach_6m_fast_p1_take1.h5,15,
+40,locA_indoor_3wall,ped,approach,6m,fast,p1,2,ped_approach_6m_fast_p1_take2.h5,15,
+41,locA_indoor_3wall,ped,approach,4m,slow,p1,1,ped_approach_4m_slow_p1_take1.h5,25,
+42,locA_indoor_3wall,ped,approach,4m,normal,p1,1,ped_approach_4m_normal_p1_take1.h5,20,
+43,locA_indoor_3wall,ped,approach,4m,normal,p1,2,ped_approach_4m_normal_p1_take2.h5,20,
+44,locA_indoor_3wall,ped,approach,4m,fast,p1,1,ped_approach_4m_fast_p1_take1.h5,15,
+45,locA_indoor_3wall,ped,approach,2m,normal,p1,1,ped_approach_2m_normal_p1_take1.h5,20,
+46,locA_indoor_3wall,ped,approach,2m,fast,p1,1,ped_approach_2m_fast_p1_take1.h5,15,
+47,locA_indoor_3wall,ped,depart,6m,slow,p1,1,ped_depart_6m_slow_p1_take1.h5,25,
+48,locA_indoor_3wall,ped,depart,6m,normal,p1,1,ped_depart_6m_normal_p1_take1.h5,20,
+49,locA_indoor_3wall,ped,depart,6m,normal,p1,2,ped_depart_6m_normal_p1_take2.h5,20,
+50,locA_indoor_3wall,ped,depart,6m,fast,p1,1,ped_depart_6m_fast_p1_take1.h5,15,
+51,locA_indoor_3wall,ped,depart,4m,normal,p1,1,ped_depart_4m_normal_p1_take1.h5,20,
+52,locA_indoor_3wall,ped,depart,2m,normal,p1,1,ped_depart_2m_normal_p1_take1.h5,20,
+53,locA_indoor_3wall,ped,diagonal,6m,normal,p1,1,ped_diagonal_6m_normal_p1_take1.h5,20,
+54,locA_indoor_3wall,ped,diagonal,4m,normal,p1,1,ped_diagonal_4m_normal_p1_take1.h5,20,
+55,locA_indoor_3wall,ped,diagonal,4m,normal,p1,2,ped_diagonal_4m_normal_p1_take2.h5,20,
+56,locA_indoor_3wall,ped,diagonal,4m,fast,p1,1,ped_diagonal_4m_fast_p1_take1.h5,15,
+57,locA_indoor_3wall,ped,approach,6m,slow,p2,1,ped_approach_6m_slow_p2_take1.h5,25,
+58,locA_indoor_3wall,ped,approach,6m,normal,p2,1,ped_approach_6m_normal_p2_take1.h5,20,
+59,locA_indoor_3wall,ped,approach,6m,normal,p2,2,ped_approach_6m_normal_p2_take2.h5,20,
+60,locA_indoor_3wall,ped,approach,6m,normal,p2,3,ped_approach_6m_normal_p2_take3.h5,20,
+61,locA_indoor_3wall,ped,approach,6m,fast,p2,1,ped_approach_6m_fast_p2_take1.h5,15,
+62,locA_indoor_3wall,ped,approach,6m,fast,p2,2,ped_approach_6m_fast_p2_take2.h5,15,
+63,locA_indoor_3wall,ped,approach,4m,slow,p2,1,ped_approach_4m_slow_p2_take1.h5,25,
+64,locA_indoor_3wall,ped,approach,4m,normal,p2,1,ped_approach_4m_normal_p2_take1.h5,20,
+65,locA_indoor_3wall,ped,approach,4m,normal,p2,2,ped_approach_4m_normal_p2_take2.h5,20,
+66,locA_indoor_3wall,ped,approach,4m,fast,p2,1,ped_approach_4m_fast_p2_take1.h5,15,
+67,locA_indoor_3wall,ped,approach,2m,normal,p2,1,ped_approach_2m_normal_p2_take1.h5,20,
+68,locA_indoor_3wall,ped,approach,2m,fast,p2,1,ped_approach_2m_fast_p2_take1.h5,15,
+69,locA_indoor_3wall,ped,depart,6m,slow,p2,1,ped_depart_6m_slow_p2_take1.h5,25,
+70,locA_indoor_3wall,ped,depart,6m,normal,p2,1,ped_depart_6m_normal_p2_take1.h5,20,
+71,locA_indoor_3wall,ped,depart,6m,normal,p2,2,ped_depart_6m_normal_p2_take2.h5,20,
+72,locA_indoor_3wall,ped,depart,6m,fast,p2,1,ped_depart_6m_fast_p2_take1.h5,15,
+73,locA_indoor_3wall,ped,depart,4m,normal,p2,1,ped_depart_4m_normal_p2_take1.h5,20,
+74,locA_indoor_3wall,ped,depart,2m,normal,p2,1,ped_depart_2m_normal_p2_take1.h5,20,
+75,locA_indoor_3wall,ped,diagonal,6m,normal,p2,1,ped_diagonal_6m_normal_p2_take1.h5,20,
+76,locA_indoor_3wall,ped,diagonal,4m,normal,p2,1,ped_diagonal_4m_normal_p2_take1.h5,20,
+77,locA_indoor_3wall,ped,diagonal,4m,normal,p2,2,ped_diagonal_4m_normal_p2_take2.h5,20,
+78,locA_indoor_3wall,ped,diagonal,4m,fast,p2,1,ped_diagonal_4m_fast_p2_take1.h5,15,
+79,locA_indoor_3wall,ped,approach,6m,slow,p3,1,ped_approach_6m_slow_p3_take1.h5,25,
+80,locA_indoor_3wall,ped,approach,6m,normal,p3,1,ped_approach_6m_normal_p3_take1.h5,20,
+81,locA_indoor_3wall,ped,approach,6m,normal,p3,2,ped_approach_6m_normal_p3_take2.h5,20,
+82,locA_indoor_3wall,ped,approach,6m,normal,p3,3,ped_approach_6m_normal_p3_take3.h5,20,
+83,locA_indoor_3wall,ped,approach,6m,fast,p3,1,ped_approach_6m_fast_p3_take1.h5,15,
+84,locA_indoor_3wall,ped,approach,6m,fast,p3,2,ped_approach_6m_fast_p3_take2.h5,15,
+85,locA_indoor_3wall,ped,approach,4m,slow,p3,1,ped_approach_4m_slow_p3_take1.h5,25,
+86,locA_indoor_3wall,ped,approach,4m,normal,p3,1,ped_approach_4m_normal_p3_take1.h5,20,
+87,locA_indoor_3wall,ped,approach,4m,normal,p3,2,ped_approach_4m_normal_p3_take2.h5,20,
+88,locA_indoor_3wall,ped,approach,4m,fast,p3,1,ped_approach_4m_fast_p3_take1.h5,15,
+89,locA_indoor_3wall,ped,approach,2m,normal,p3,1,ped_approach_2m_normal_p3_take1.h5,20,
+90,locA_indoor_3wall,ped,approach,2m,fast,p3,1,ped_approach_2m_fast_p3_take1.h5,15,
+91,locA_indoor_3wall,ped,depart,6m,slow,p3,1,ped_depart_6m_slow_p3_take1.h5,25,
+92,locA_indoor_3wall,ped,depart,6m,normal,p3,1,ped_depart_6m_normal_p3_take1.h5,20,
+93,locA_indoor_3wall,ped,depart,6m,normal,p3,2,ped_depart_6m_normal_p3_take2.h5,20,
+94,locA_indoor_3wall,ped,depart,6m,fast,p3,1,ped_depart_6m_fast_p3_take1.h5,15,
+95,locA_indoor_3wall,ped,depart,4m,normal,p3,1,ped_depart_4m_normal_p3_take1.h5,20,
+96,locA_indoor_3wall,ped,depart,2m,normal,p3,1,ped_depart_2m_normal_p3_take1.h5,20,
+97,locA_indoor_3wall,ped,diagonal,6m,normal,p3,1,ped_diagonal_6m_normal_p3_take1.h5,20,
+98,locA_indoor_3wall,ped,diagonal,4m,normal,p3,1,ped_diagonal_4m_normal_p3_take1.h5,20,
+99,locA_indoor_3wall,ped,diagonal,4m,normal,p3,2,ped_diagonal_4m_normal_p3_take2.h5,20,
+100,locA_indoor_3wall,ped,diagonal,4m,fast,p3,1,ped_diagonal_4m_fast_p3_take1.h5,15,

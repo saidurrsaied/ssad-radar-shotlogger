@@ -1,0 +1,23 @@
+# Virtual environment -- everyone creates their own, see README.md
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Recording sessions. These are data, not code: a single 60 s take is tens of
+# megabytes, and a full campaign is well over a gigabyte. Use the Shot Logger's
+# "Save session to..." to move a finished session somewhere shared instead of
+# committing it here.
+*.h5
+shotlist_working.csv
+_logbook.csv
+session.json
+data/
+mes/
+
+# OS clutter
+.DS_Store
+Thumbs.db

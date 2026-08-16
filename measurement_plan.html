@@ -1,0 +1,584 @@
+<title>Three-Wall Indoor Campaign</title>
+<style>
+  :root {
+    --ground: #EFF2F4;
+    --surface: #FFFFFF;
+    --sunk: #E3E8EC;
+    --ink: #131C24;
+    --muted: #5A6B78;
+    --line: #C9D3DA;
+    --hair: #DDE4E9;
+    --approach: #0B6E9E;
+    --depart: #A8402F;
+    --diagonal: #7D6317;
+    --neutral-class: #4A5A67;
+    --approach-wash: #E4EEF5;
+    --depart-wash: #F6E7E4;
+    --diagonal-wash: #F2EDDD;
+    --stop: #A8402F;
+    --go: #1F6B4A;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0E141A;
+      --surface: #171F27;
+      --sunk: #1E2830;
+      --ink: #DEE6EC;
+      --muted: #8B9CA9;
+      --line: #33414C;
+      --hair: #242F38;
+      --approach: #57ADD8;
+      --depart: #E68B76;
+      --diagonal: #D2AE4C;
+      --neutral-class: #9CADB9;
+      --approach-wash: #16303E;
+      --depart-wash: #38221D;
+      --diagonal-wash: #322B16;
+      --stop: #E68B76;
+      --go: #6FBF95;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0E141A;
+    --surface: #171F27;
+    --sunk: #1E2830;
+    --ink: #DEE6EC;
+    --muted: #8B9CA9;
+    --line: #33414C;
+    --hair: #242F38;
+    --approach: #57ADD8;
+    --depart: #E68B76;
+    --diagonal: #D2AE4C;
+    --neutral-class: #9CADB9;
+    --approach-wash: #16303E;
+    --depart-wash: #38221D;
+    --diagonal-wash: #322B16;
+    --stop: #E68B76;
+    --go: #6FBF95;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: Georgia, "Iowan Old Style", "Source Serif Pro", serif;
+    font-size: 17px;
+    line-height: 1.62;
+    margin: 0;
+    padding: 0 20px 96px;
+  }
+
+  .wrap { max-width: 820px; margin: 0 auto; }
+  .prose { max-width: 64ch; }
+
+  .mono {
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+  }
+
+  /* ---- masthead ---- */
+  header.mast {
+    border-bottom: 2px solid var(--ink);
+    padding: 72px 0 22px;
+    margin-bottom: 40px;
+  }
+  .eyebrow {
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 18px;
+  }
+  h1 {
+    font-size: clamp(34px, 6vw, 52px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0 0 16px;
+    text-wrap: balance;
+  }
+  .standfirst {
+    font-size: 19px;
+    color: var(--muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+  .factbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+    margin-top: 30px;
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    font-size: 12.5px;
+  }
+  .factbar div { display: flex; flex-direction: column; gap: 3px; }
+  .factbar dt, .fact-k {
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 10.5px;
+  }
+  .fact-v { font-size: 17px; font-variant-numeric: tabular-nums; }
+
+  /* ---- sections ---- */
+  section { margin-bottom: 56px; }
+  h2 {
+    font-size: 25px;
+    letter-spacing: -0.01em;
+    margin: 0 0 6px;
+    text-wrap: balance;
+  }
+  h2 .num {
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    color: var(--muted);
+    margin-right: 12px;
+    font-weight: normal;
+  }
+  h3 {
+    font-size: 18px;
+    margin: 32px 0 4px;
+    letter-spacing: -0.005em;
+  }
+  .rule { border: 0; border-top: 1px solid var(--line); margin: 0 0 24px; }
+  p { margin: 0 0 16px; }
+  ul, ol { margin: 0 0 16px; padding-left: 22px; max-width: 64ch; }
+  li { margin-bottom: 8px; }
+  code {
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    font-size: 0.855em;
+    background: var(--sunk);
+    padding: 1.5px 5px;
+    border-radius: 3px;
+  }
+  a { color: var(--approach); }
+
+  /* ---- callouts ---- */
+  .note {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--muted);
+    padding: 18px 22px;
+    margin: 0 0 22px;
+    max-width: 68ch;
+  }
+  .note.gate { border-left-color: var(--stop); }
+  .note.gate .note-h { color: var(--stop); }
+  .note-h {
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 8px;
+  }
+  .note p:last-child { margin-bottom: 0; }
+
+  /* ---- tables ---- */
+  .scroll { overflow-x: auto; margin: 0 0 22px; border: 1px solid var(--line); background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  caption {
+    text-align: left;
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 12px 16px 10px;
+    border-bottom: 1px solid var(--hair);
+  }
+  th, td {
+    text-align: left;
+    padding: 9px 16px;
+    border-bottom: 1px solid var(--hair);
+    vertical-align: top;
+  }
+  thead th {
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: normal;
+    white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: 0; }
+  td.n, th.n { font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+  td.f {
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    font-size: 12.5px;
+    white-space: nowrap;
+  }
+  tfoot td {
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    border-top: 2px solid var(--line);
+    background: var(--sunk);
+  }
+
+  .geo {
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .geo.approach { background: var(--approach-wash); color: var(--approach); }
+  .geo.depart { background: var(--depart-wash); color: var(--depart); }
+  .geo.diagonal { background: var(--diagonal-wash); color: var(--diagonal); }
+  .geo.static { background: var(--sunk); color: var(--muted); }
+
+  /* ---- class allocation strip ---- */
+  .alloc { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); margin-bottom: 24px; }
+  .alloc > div { background: var(--surface); padding: 16px 18px; }
+  .alloc .k {
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+    margin: 0 0 6px;
+  }
+  .alloc .v { font-size: 30px; line-height: 1; font-variant-numeric: tabular-nums; margin: 0 0 6px; }
+  .alloc .s { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.4; }
+
+  /* ---- diagram ---- */
+  figure { margin: 0 0 22px; }
+  .diagram { background: var(--surface); border: 1px solid var(--line); padding: 20px; }
+  .diagram svg { display: block; width: 100%; height: auto; }
+  .wall { fill: none; stroke: var(--ink); stroke-width: 5; stroke-linecap: square; }
+  .beam { fill: var(--approach); opacity: 0.09; }
+  .axis { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 5 4; }
+  .mark { stroke: var(--ink); stroke-width: 1.5; }
+  .lbl { font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace; font-size: 11px; fill: var(--ink); }
+  .lbl.dim { fill: var(--muted); }
+  .sens { fill: var(--ink); }
+  .mp { stroke: var(--depart); stroke-width: 1.5; stroke-dasharray: 3 3; fill: none; }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 10px; max-width: 64ch; }
+
+  /* ---- checklist ---- */
+  .check { list-style: none; padding: 0; max-width: 68ch; }
+  .check li {
+    display: flex; gap: 12px; align-items: baseline;
+    border-bottom: 1px solid var(--hair); padding: 11px 0; margin: 0;
+  }
+  .check li:last-child { border-bottom: 0; }
+  .check .box {
+    flex: none; width: 13px; height: 13px; border: 1.5px solid var(--muted);
+    border-radius: 2px; transform: translateY(1px);
+  }
+
+  footer.end {
+    border-top: 1px solid var(--line);
+    padding-top: 20px;
+    font-size: 13.5px;
+    color: var(--muted);
+    max-width: 64ch;
+  }
+  @media (max-width: 560px) {
+    body { font-size: 16px; }
+    header.mast { padding-top: 44px; }
+  }
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <p class="eyebrow">Measurement Plan &middot; Location A &middot; Dataset workstream</p>
+  <h1>Three-Wall Indoor Campaign</h1>
+  <p class="standfirst">One hundred recordings of pedestrian and background micro-Doppler in an enclosed indoor space, following the collection protocol in section&nbsp;6 of the getting-started guide. No bicycle or scooter is available in this room.</p>
+  <div class="factbar">
+    <div><span class="fact-k">Recordings</span><span class="fact-v">100</span></div>
+    <div><span class="fact-k">Classes</span><span class="fact-v">2 of 4</span></div>
+    <div><span class="fact-k">Beam-on time</span><span class="fact-v">48.2 min</span></div>
+    <div><span class="fact-k">Session length</span><span class="fact-v">~3.5 h</span></div>
+    <div><span class="fact-k">Subjects</span><span class="fact-v">3</span></div>
+  </div>
+</header>
+
+<section>
+  <h2><span class="num">01</span>What this session does and does not deliver</h2>
+  <hr class="rule">
+  <div class="prose">
+    <p>This room produces two of the project's four classes. There is no bicycle and no scooter here, so this session records pedestrians and background, and the cyclist class comes entirely from the outdoor sessions. That single fact settles two things the plan would otherwise have to leave open, and it creates one risk that has to be handled outdoors rather than here.</p>
+    <p>Said plainly so nobody is surprised at M3: after this session you will have 66 pedestrian and 34 background passes, and zero cyclist passes. The guide asks for at least one hundred per class from at least three subjects in at least two locations.</p>
+  </div>
+
+  <div class="note gate">
+    <p class="note-h">This room cannot be the held-out test location</p>
+    <p>The guide holds one location back entirely as a test set. That location has to contain the classes you need to measure, and the project's core promise is pedestrian versus cyclist versus background. A test set with no cyclist in it cannot measure the discrimination that decides the project, so the held-out location must be an outdoor one. Record this room as training data and write that in the logbook header before <code>seq 1</code>.</p>
+  </div>
+
+  <div class="note gate">
+    <p class="note-h">The confound this creates, and how to kill it outdoors</p>
+    <p>If every cyclist recording is outdoors and every indoor recording is pedestrian or background, then indoors versus outdoors predicts <em>not-cyclist</em> perfectly. A convolutional network will happily learn the room &mdash; its clutter floor, its multipath, its noise level &mdash; instead of learning gait, and it will score well in validation while having understood nothing. The fix is not available in this room. It is a constraint on the outdoor sessions: <strong>record all three classes at every outdoor location</strong>, so that environment and class vary independently. If the outdoor sessions only capture cyclists, this indoor set actively damages the dataset rather than enlarging it.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">02</span>The configuration freeze comes first</h2>
+  <hr class="rule">
+  <div class="prose">
+    <p>Section 6 is blunt about this: recordings made with different sweep or range settings cannot be cleanly mixed into one training set. Every one of the hundred files below must carry an identical sensor configuration, and so must every file from the second location later.</p>
+    <p>That freeze has now happened. The configuration below was measured on the sensor and written to <code>config/session_config.json</code>, and the Shot Logger checks every recording against it, so drift cannot pass unnoticed. What remains for the pilot is the part hardware could not answer from a bench: that the mounting, the range and the floor markers suit this particular room. Run a handful of throwaway takes into a <code>pilot/</code> folder, look at the spectrograms, then start the count at one.</p>
+  </div>
+
+  <div class="note gate">
+    <p class="note-h">Superseded &mdash; the first draft of this table was unbuildable</p>
+    <p>Every value below has now been measured on the XE125 rather than derived on paper, and the original draft failed on hardware four times before running at all. The headline correction: the XM125's exploration server negotiates 2&nbsp;Mbaud and reports that as its ceiling, giving roughly 200&nbsp;kB/s. The draft's continuous-sweep configuration wanted about 1&nbsp;MB/s and produced <strong>399 delayed frames out of 400</strong>. Continuous sweep mode cannot work over this link at any useful range, and it would have failed silently &mdash; dropped frames produce short files, not errors.</p>
+  </div>
+
+  <h3>What failed, and why</h3>
+  <div class="scroll">
+    <table>
+      <caption>Rejected by the sensor before anything ran</caption>
+      <thead>
+        <tr><th>Draft value</th><th>What the hardware said</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="f">continuous_sweep_mode = true</td><td>Requires the inter-frame and inter-sweep idle states to be equal. The defaults differ, so the config was invalid as written.</td></tr>
+        <tr><td class="f">128 sweeps &times; 42 points</td><td>The frame buffer is capped at 4095 samples. 5376 was refused outright.</td></tr>
+        <tr><td class="f">prf = 15.6 MHz</td><td>Measures to only 5.10 m, short of the 6 m end point. 13.0 MHz reaches 7.00 m.</td></tr>
+        <tr><td class="f">sweep_rate = 6000 Hz</td><td>Unattainable: the sensor reported a 2791 Hz ceiling at 28 points and HWAAS 8, which would cap velocity at &plusmn;3.5 m/s and alias a walker's limbs.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>The frozen configuration</h3>
+  <div class="scroll">
+    <table>
+      <caption>A121 Sparse IQ &mdash; measured live, 0 dropped and 0 saturated frames over 500</caption>
+      <thead>
+        <tr><th>Parameter</th><th>Value</th><th>Reasoning</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="f">sweeps_per_frame</td><td class="f">64</td><td>One coherent burst is one spectrogram column. 64 gives 0.213 m/s Doppler bins, enough to separate limb returns from the torso line.</td></tr>
+        <tr><td class="f">sweep_rate</td><td class="f">5500 Hz</td><td>Sets the unambiguous velocity to &plusmn;6.82 m/s. Sized for the <em>outdoor cyclist</em>, not the indoor walker, because the freeze is global and this number has to survive every environment.</td></tr>
+        <tr><td class="f">continuous_sweep_mode</td><td class="f">false</td><td>Burst mode. The link cannot carry gapless slow time, and the FFT does not need it &mdash; only the 11.6 ms burst has to be coherent.</td></tr>
+        <tr><td class="f">frame_rate</td><td class="f">25 Hz</td><td>25 spectrogram columns per second at 141 kB/s. The link saturates between 161 and 187 kB/s, so this keeps about 20% margin.</td></tr>
+        <tr><td class="f">start_point</td><td class="f">400 (1.0 m)</td><td>Clear of the sensor's direct leakage.</td></tr>
+        <tr><td class="f">step_length</td><td class="f">96 (24 cm)</td><td>Range resolution is not what classifies the target &mdash; energy is summed across range for the spectrogram.</td></tr>
+        <tr><td class="f">num_points</td><td class="f">22</td><td>Covers 1.00 m to 6.04 m, so the 6 m floor marker is inside the beam. Buffer use 1408 of 4095.</td></tr>
+        <tr><td class="f">profile</td><td class="f">3</td><td>Balance of SNR and close-in blindness across the span.</td></tr>
+        <tr><td class="f">hwaas</td><td class="f">4</td><td>8 caps the sweep rate at 2791 Hz. 4 lifts it to 5771 Hz at the cost of about 1.5 dB of averaging.</td></tr>
+        <tr><td class="f">prf</td><td class="f">13.0 MHz</td><td>Measures to 7.00 m, past the 6.04 m end point.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="scroll">
+    <table>
+      <caption>Where the link gives out &mdash; measured at 21 points, HWAAS 4</caption>
+      <thead>
+        <tr><th>Frame rate</th><th>Throughput</th><th>Frames delayed</th><th>&nbsp;</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="f">25 fps</td><td class="f">134 kB/s</td><td class="f">0 / 500</td><td>chosen</td></tr>
+        <tr><td class="f">30 fps</td><td class="f">161 kB/s</td><td class="f">0 / 240</td><td>works, no margin</td></tr>
+        <tr><td class="f">35 fps</td><td class="f">187 kB/s</td><td class="f">77 / 280</td><td>link saturated</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="prose">
+    <p>Two consequences worth carrying into the session. The dataset shrinks to about <strong>0.41 GB</strong> for the full 48 minutes of beam-on, so disk space is no longer a real constraint. And throughput is now a settled question rather than a pilot risk &mdash; the pilot's job is to confirm the range and mounting suit the room, not to discover whether the link keeps up.</p>
+    <p>The configuration is written once by <code>tools/freeze_session_config.py</code> into <code>config/session_config.json</code>, and the Shot Logger verifies every recording against it. Do not edit that file by hand; the loader refuses a file that no longer round-trips through the parser, which is what a hand edit usually produces.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">03</span>Room setup</h2>
+  <hr class="rule">
+
+  <figure>
+    <div class="diagram">
+      <svg viewBox="0 0 520 340" role="img" aria-label="Plan view of the recording room: sensor mounted at the closed end, beam directed along the open axis, floor markers at 1, 2, 4 and 6 metres.">
+        <path class="beam" d="M 260 46 L 452 300 L 68 300 Z"></path>
+        <path class="wall" d="M 46 40 L 474 40"></path>
+        <path class="wall" d="M 46 40 L 46 312"></path>
+        <path class="wall" d="M 474 40 L 474 312"></path>
+        <line class="axis" x1="260" y1="46" x2="260" y2="316"></line>
+        <path class="mp" d="M 260 60 L 466 190 L 260 280"></path>
+        <rect class="sens" x="248" y="34" width="24" height="14" rx="2"></rect>
+        <text class="lbl" x="282" y="45">XE125 @ 1.0 m</text>
+        <line class="mark" x1="248" y1="86" x2="272" y2="86"></line>
+        <text class="lbl dim" x="282" y="90">1 m</text>
+        <line class="mark" x1="248" y1="130" x2="272" y2="130"></line>
+        <text class="lbl dim" x="282" y="134">2 m</text>
+        <line class="mark" x1="248" y1="218" x2="272" y2="218"></line>
+        <text class="lbl dim" x="282" y="222">4 m</text>
+        <line class="mark" x1="248" y1="306" x2="272" y2="306"></line>
+        <text class="lbl dim" x="282" y="310">6 m</text>
+        <text class="lbl dim" x="56" y="30">closed end &mdash; sensor backs onto this wall</text>
+        <text class="lbl dim" x="56" y="332">open end</text>
+        <text class="lbl" x="352" y="176" fill="currentColor" opacity="0.85">multipath</text>
+      </svg>
+    </div>
+    <figcaption>Sensor at the closed end, beam down the open axis. The dashed red path is the specular multipath that a moving target will create off a side wall &mdash; the one artefact that clutter removal cannot delete.</figcaption>
+  </figure>
+
+  <div class="prose">
+    <p>Mount the XE125 on the tripod at 1.0 m, matching the crossing-button height the guide specifies, at the <em>closed</em> end of the room with its back to the wall and the beam pointing out along the open axis. The alternative, standing at the open end and firing into the closed end, turns that end wall into a large flat reflector sitting at a fixed range, which costs you receiver dynamic range for no benefit.</p>
+    <p>Keep the beam parallel to the two side walls. Angling it into a corner is the worst case available to you: a trihedral corner returns energy far more efficiently than a flat wall, and it will dominate the frame.</p>
+    <p>Run the USB cable backwards, behind the sensor, and keep the tripod legs and everything else out of the region in front. The guide warns that the antenna is sensitive to nearby objects; a cable swinging in the near field puts its own Doppler into every recording of the session.</p>
+    <p>Tape the floor at 1, 2, 4 and 6 m on the centre line before anyone walks. Subjects follow the tape, not their judgement of distance.</p>
+  </div>
+
+  <h3>What three walls do to the data</h3>
+  <div class="prose">
+    <p>The walls themselves are static, so they sit at zero Doppler and the clutter removal in feature extraction will take them out. That is the easy half.</p>
+    <p>The hard half is that a <em>moving</em> target also reaches the sensor by bouncing off a side wall. That echo arrives later, so it appears at a longer apparent range, and its radial velocity is the projection along the folded path rather than the direct one. In the spectrogram it shows up as a faint second track shadowing the real one at a different velocity. It is not static, so no clutter filter removes it, and the network will happily learn it as a feature of this room, which is exactly the domain shift the two-location rule exists to catch.</p>
+    <p>You cannot eliminate it indoors. You can reduce it: keep subjects on the centre line, and if the lab has RF absorber, put it at the specular points roughly halfway along each side wall. Whatever you do, note it in the logbook, and note the room's width &mdash; a narrow room folds harder.</p>
+  </div>
+
+  <div class="note">
+    <p class="note-h">If the room is under 3 m wide</p>
+    <p>The diagonal trajectories will not fit at a meaningful angle. Record them at whatever shallower angle the room allows and write the actual angle in the logbook rather than silently recording something closer to a straight approach. Note that <em>crossing</em> paths are out of scope by the guide's own recommendation; diagonal is not crossing.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">04</span>How the hundred are allocated</h2>
+  <hr class="rule">
+
+  <div class="alloc">
+    <div><p class="k">Pedestrian</p><p class="v">66</p><p class="s">3 subjects &times; 22</p></div>
+    <div><p class="k">Background</p><p class="v">34</p><p class="s">Room signature, clutter, and stationary people</p></div>
+  </div>
+
+  <div class="prose">
+    <p>With two classes instead of four, the freed slots go where this room is genuinely better than an outdoor site rather than being spread evenly. Two thirds to pedestrian, one third to background.</p>
+    <p>Pedestrian gets the larger share because gait is the signal the whole project rests on and it varies more between people than any other factor. Twenty-two passes per subject is enough to cover three trajectories against three distance markers and three speeds without any cell resting on a single take, which matters because one bad recording in a factor you sampled once silently removes that factor.</p>
+    <p>Background gets a third, which is more than it had when four classes shared the hundred, and this is the right room to spend it in. An enclosed space with three walls has a richer and more repeatable clutter environment than an open car park: doors, ventilation, furniture, and hard surfaces that produce the multipath discussed above. The guide warns that a classifier which has never seen nothing will confidently hallucinate pedestrians, and indoor background is the cheapest and most varied way to fix that.</p>
+  </div>
+
+  <h3>Pedestrian &mdash; per subject, repeated for p1, p2, p3</h3>
+  <div class="scroll">
+    <table>
+      <caption>22 recordings per subject &middot; 66 total</caption>
+      <thead>
+        <tr><th>Geometry</th><th>Marker</th><th>Speed</th><th class="n">Takes</th><th>What the subject does</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="geo approach">approach</span></td><td class="f">6 m</td><td>slow</td><td class="n">1</td><td>Start on the 6 m tape, walk to the 1 m tape, stop.</td></tr>
+        <tr><td><span class="geo approach">approach</span></td><td class="f">6 m</td><td>normal</td><td class="n">3</td><td>Ordinary walking pace. The single most common case, so it gets the most takes.</td></tr>
+        <tr><td><span class="geo approach">approach</span></td><td class="f">6 m</td><td>fast</td><td class="n">2</td><td>Brisk walk, not a run.</td></tr>
+        <tr><td><span class="geo approach">approach</span></td><td class="f">4 m</td><td>slow</td><td class="n">1</td><td>&nbsp;</td></tr>
+        <tr><td><span class="geo approach">approach</span></td><td class="f">4 m</td><td>normal</td><td class="n">2</td><td>Shorter run-in, so the target enters mid-range already walking.</td></tr>
+        <tr><td><span class="geo approach">approach</span></td><td class="f">4 m</td><td>fast</td><td class="n">1</td><td>&nbsp;</td></tr>
+        <tr><td><span class="geo approach">approach</span></td><td class="f">2 m</td><td>normal</td><td class="n">1</td><td>Near-field only. Tests the close end of the range.</td></tr>
+        <tr><td><span class="geo approach">approach</span></td><td class="f">2 m</td><td>fast</td><td class="n">1</td><td>&nbsp;</td></tr>
+        <tr><td><span class="geo depart">depart</span></td><td class="f">6 m</td><td>slow</td><td class="n">1</td><td>Start at 1 m, walk away to the 6 m tape.</td></tr>
+        <tr><td><span class="geo depart">depart</span></td><td class="f">6 m</td><td>normal</td><td class="n">2</td><td>&nbsp;</td></tr>
+        <tr><td><span class="geo depart">depart</span></td><td class="f">6 m</td><td>fast</td><td class="n">1</td><td>&nbsp;</td></tr>
+        <tr><td><span class="geo depart">depart</span></td><td class="f">4 m</td><td>normal</td><td class="n">1</td><td>&nbsp;</td></tr>
+        <tr><td><span class="geo depart">depart</span></td><td class="f">2 m</td><td>normal</td><td class="n">1</td><td>&nbsp;</td></tr>
+        <tr><td><span class="geo diagonal">diagonal</span></td><td class="f">6 m</td><td>normal</td><td class="n">1</td><td>Oblique path starting from the far marker.</td></tr>
+        <tr><td><span class="geo diagonal">diagonal</span></td><td class="f">4 m</td><td>normal</td><td class="n">2</td><td>Oblique path, closest approach at the 4 m tape.</td></tr>
+        <tr><td><span class="geo diagonal">diagonal</span></td><td class="f">4 m</td><td>fast</td><td class="n">1</td><td>&nbsp;</td></tr>
+      </tbody>
+      <tfoot><tr><td colspan="3">Per subject</td><td class="n">22</td><td>&times; 3 subjects = 66</td></tr></tfoot>
+    </table>
+  </div>
+  <div class="prose">
+    <p>Vary clothing between subjects rather than within them &mdash; one in a bulky coat, one carrying a backpack, one in ordinary clothes. The guide asks for varied clothing and bags, and holding it constant within a subject keeps the factor readable instead of scrambling it into every cell.</p>
+    <p>Note that the diagonal passes carry a warning from the physics rather than the protocol. The sensor measures radial velocity only, so the more oblique the path, the less Doppler a walking person produces &mdash; and the guide's own risk list names this. Keep the diagonals shallow, closer to an angled approach than to a crossing, and record the angle you actually used.</p>
+  </div>
+
+  <h3>Background &mdash; no subject</h3>
+  <div class="scroll">
+    <table>
+      <caption>34 recordings &middot; 27 minutes &middot; longest single block of the session</caption>
+      <thead>
+        <tr><th>Source</th><th>Marker</th><th class="n">Takes</th><th class="n">Each</th><th>Scene</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="geo static">empty</span></td><td class="f">6 m</td><td class="n">6</td><td class="n">60 s</td><td>Room empty, doors shut, nobody moving. The baseline signature.</td></tr>
+        <tr><td><span class="geo static">hvac</span></td><td class="f">6 m</td><td class="n">4</td><td class="n">60 s</td><td>Empty, with ventilation or air conditioning running.</td></tr>
+        <tr><td><span class="geo static">trolley</span></td><td class="f">4 m</td><td class="n">5</td><td class="n">30 s</td><td>Lab trolley or office chair rolled through the beam.</td></tr>
+        <tr><td><span class="geo static">door</span></td><td class="f">6 m</td><td class="n">4</td><td class="n">30 s</td><td>Door at the open end opened and closed.</td></tr>
+        <tr><td><span class="geo static">umbrella</span></td><td class="f">3 m</td><td class="n">3</td><td class="n">30 s</td><td>Umbrella opened, closed, rotated.</td></tr>
+        <tr><td><span class="geo static">standing</span></td><td class="f">2 m</td><td class="n">3</td><td class="n">60 s</td><td>Subject stands still on the axis. Breathing and sway only.</td></tr>
+        <tr><td><span class="geo static">standing</span></td><td class="f">4 m</td><td class="n">3</td><td class="n">60 s</td><td>As above, mid-range.</td></tr>
+        <tr><td><span class="geo static">standing</span></td><td class="f">6 m</td><td class="n">2</td><td class="n">60 s</td><td>As above, at the far marker.</td></tr>
+        <tr><td><span class="geo static">operator</span></td><td class="f">1 m</td><td class="n">2</td><td class="n">30 s</td><td>Operator moves behind the sensor, beam otherwise clear.</td></tr>
+        <tr><td><span class="geo static">fan</span></td><td class="f">4 m</td><td class="n">2</td><td class="n">60 s</td><td>Rotating fan in the beam, no person present.</td></tr>
+      </tbody>
+      <tfoot><tr><td colspan="2">Total</td><td class="n">34</td><td class="n">27.0 min</td><td>&nbsp;</td></tr></tfoot>
+    </table>
+  </div>
+  <div class="prose">
+    <p>The eight <em>standing</em> recordings are the most valuable rows in this table and the reason background grew. A stationary person is background by the guide's class definition, but they are still a body in the beam returning a breathing modulation, and this is the exact case where a pedestrian detector embarrasses itself. Sampling it at three distances means the model sees it at the ranges where it will actually occur.</p>
+    <p>The <em>operator</em> recordings capture what is happening in all sixty-six pedestrian files anyway &mdash; a second person moving just behind the sensor &mdash; so the network gets to learn that motion behind the antenna is not a target rather than absorbing it as noise.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">05</span>Naming, folders and the logbook</h2>
+  <hr class="rule">
+  <div class="prose">
+    <p>Filenames follow the guide's fixed pattern exactly, so the label is readable from the name and no frame-level annotation is ever needed:</p>
+  </div>
+  <div class="note">
+    <p class="note-h">Pattern</p>
+    <p><code>&lt;class&gt;_&lt;geometry&gt;_&lt;distance&gt;_&lt;speed&gt;_&lt;subject&gt;_take&lt;n&gt;.h5</code></p>
+    <p style="margin-top:10px">This session uses <code>ped</code> and <code>bg</code> only; <code>cyc</code> and the stretch class <code>sct</code> are reserved for the outdoor sessions and must use the identical pattern. Background reuses the geometry slot for the disturbance source, with <code>na</code> for speed and <code>p0</code> for subject &mdash; so <code>bg_trolley_4m_na_p0_take1.h5</code> still parses on the same split.</p>
+  </div>
+  <div class="prose">
+    <p>The full ordered list of all hundred filenames is generated, not hand-written, by <code>tools/make_shotlist.py</code> into <code>measurement_plan_shotlist.csv</code>. Print it and tick rows off in the room. The script asserts that all hundred names are unique before it writes, which is the failure this protocol is most prone to.</p>
+    <p>Store recordings as <code>data/locA_indoor3wall/&lt;class&gt;/</code>, one folder per class, matching the guide's one-class-per-recording rule.</p>
+    <p>The shared logbook needs a header block written once per session &mdash; date, room and building, room dimensions, wall materials, which end is open, whether absorber was used, the frozen configuration file name, the train-or-test decision from section 1 &mdash; and then one row per recording carrying only what varies: sequence number, filename, subject, clothing, and anything anomalous. Thirty seconds a recording, as the guide says, and it is what lets you diagnose a problem three weeks later.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">06</span>Running order</h2>
+  <hr class="rule">
+  <div class="prose">
+    <p>The shot list is ordered deliberately, and it is worth following rather than shuffling.</p>
+    <p>Background comes first, because the empty-room signature has to be captured before anyone has walked through the space and before the furniture moves. Then pedestrian, grouped by subject so that each person does their twenty-two passes in one block instead of being called back repeatedly.</p>
+    <p>Two people run the session: one operates the Exploration Tool and keeps the logbook, one is the target. Rotate so all three subjects get recorded, but never let the person in the beam also drive the laptop.</p>
+  </div>
+
+  <div class="scroll">
+    <table>
+      <caption>Session blocks</caption>
+      <thead>
+        <tr><th class="n">Seq</th><th>Block</th><th class="n">Files</th><th class="n">Beam-on</th><th>Needs</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="n">&mdash;</td><td>Pilot and configuration freeze</td><td class="n">~10</td><td class="n">&mdash;</td><td>Throwaway. Ends with a frozen config file.</td></tr>
+        <tr><td class="n">1&ndash;34</td><td>Background</td><td class="n">34</td><td class="n">27.0 min</td><td>Empty room first, then trolley, door, umbrella, fan, standing.</td></tr>
+        <tr><td class="n">35&ndash;56</td><td>Pedestrian, p1</td><td class="n">22</td><td class="n">7.1 min</td><td>Bulky coat.</td></tr>
+        <tr><td class="n">57&ndash;78</td><td>Pedestrian, p2</td><td class="n">22</td><td class="n">7.1 min</td><td>Backpack.</td></tr>
+        <tr><td class="n">79&ndash;100</td><td>Pedestrian, p3</td><td class="n">22</td><td class="n">7.1 min</td><td>Ordinary clothes.</td></tr>
+      </tbody>
+      <tfoot><tr><td class="n">&nbsp;</td><td>Total</td><td class="n">100</td><td class="n">48.2 min</td><td>Allow ~3.5 h with walk-backs, logbook and checks.</td></tr></tfoot>
+    </table>
+  </div>
+  <p class="prose">Beam-on time is 48 minutes; the session is three and a half hours. The gap is walking back to the start marker, writing the logbook row, and the quality checks below. Plan for one session, or split cleanly at the end of the background block or a subject block &mdash; never mid-subject, and never across a day if you can avoid it, since the room will not be identical tomorrow.</p>
+</section>
+
+<section>
+  <h2><span class="num">07</span>Quality checks</h2>
+  <hr class="rule">
+  <p class="prose">Data collection failures are silent. All of these are cheap and all of them have caught real problems in real campaigns.</p>
+  <ul class="check">
+    <li><span class="box"></span><span>Before <code>seq 1</code>: the train-or-test decision is written in the logbook header.</span></li>
+    <li><span class="box"></span><span>After the pilot: frame count in a 60 s file matches elapsed time &times; frame rate. No dropped frames.</span></li>
+    <li><span class="box"></span><span>After every tenth recording: open the last file and look at the spectrogram. A target track should be visible by eye.</span></li>
+    <li><span class="box"></span><span>Every file: size within a few percent of its neighbours of the same duration. An outlier means dropped frames.</span></li>
+    <li><span class="box"></span><span>Every file: sensor configuration in the HDF5 matches the frozen configuration, byte for byte.</span></li>
+    <li><span class="box"></span><span>End of session: re-record <code>bg_empty</code> and compare against the opening one. A changed room signature makes everything between them suspect.</span></li>
+    <li><span class="box"></span><span>Before leaving: all 100 rows of the shot list are ticked and every filename on disk appears in the CSV.</span></li>
+  </ul>
+  <div class="note">
+    <p class="note-h">People who are not in the team</p>
+    <p>Subjects are team members only, per the guide's GDPR reasoning. In a room with an open end this needs enforcing rather than assuming &mdash; put a sign at the open end for the duration of the session. If someone walks through a recording anyway, delete that file and re-record it; do not keep it as background.</p>
+  </div>
+</section>
+
+<footer class="end">
+  <p>Derived from <em>Radar Micro-Doppler Classification: a getting-started guide for the team</em>, sections 3 and 6, Lab project, Signals and Systems for Automated Driving, FH Dortmund. Sensor configuration values are a starting point for the pilot and are not yet verified on hardware.</p>
+</footer>
+
+</div>

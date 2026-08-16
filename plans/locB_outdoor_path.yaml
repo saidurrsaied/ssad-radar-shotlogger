@@ -1,0 +1,236 @@
+# Outdoor location B — open campus parking lot.
+#
+# This is the more important of the two environments. A bicycle and an e-scooter
+# cannot be ridden indoors, and the pedestrian crossing button the project models
+# is an outdoor device. The indoor three-wall room contributes pedestrian and
+# background variety; the classes that decide the project live out here.
+#
+# ---------------------------------------------------------------------------
+# BEFORE THE FIRST RECORDING: fix the distance bands
+# ---------------------------------------------------------------------------
+# The bands below are symbolic on purpose, because the sensor's usable range was
+# not settled when this plan was written. Dwell time is what matters, and it is
+# set by the range span rather than by where the subject starts:
+#
+#     range end     pedestrian 1.4 m/s   cyclist 5 m/s   e-scooter 5.5 m/s
+#       6.04 m            3.6 s              1.0 s            0.9 s
+#      12 m               7.9 s              2.2 s            2.0 s
+#      17 m              11 s                3.2 s            2.9 s
+#
+# A cyclist's pedal cadence is roughly 1–1.5 Hz, so one pedal cycle takes about
+# 0.7–1 s. At 6 m you capture a single cycle, which is not enough to see the
+# periodicity that distinguishes a cyclist at all. Extending the range is nearly
+# free on bandwidth because the spectrogram sums across range — coarser range
+# bins cost nothing. What has to be measured on the bench is SNR at the far edge
+# and whether the lower PRF drags the max sweep rate below 5500 Hz.
+#
+# So: run the bench check, re-freeze the config, then fill in the three numbers
+# here, tape the ground to match, and record them in the session logbook.
+#
+#     far  = ___ m   (the range edge; subjects may start beyond it and walk in)
+#     mid  = ___ m
+#     near = ___ m
+#
+# Filenames carry the band name, not the metre value, so nothing in this plan
+# changes once the numbers are known. One frozen config still covers every
+# location — separate indoor and outdoor configs would leave the noise floor
+# differing systematically between sites, which is the exact environment
+# shortcut the two-location rule exists to defeat.
+#
+# ---------------------------------------------------------------------------
+# TWO THINGS NOT TO TRIM
+# ---------------------------------------------------------------------------
+# The ped and bg blocks are not padding. If all the pedestrian and background
+# data came from indoors and everything else from outdoors, the site would
+# predict the class perfectly and the network would learn the environment rather
+# than the gait — scoring well in validation having understood nothing.
+#
+# A second outdoor location is still needed. The held-out test set must contain
+# cyclists, so it must be outdoors. If this is a training location, a locC
+# outdoor session is required for the test set, recording the same classes.
+#
+# ---------------------------------------------------------------------------
+# WHY THE CLASSES ARE SPLIT THE WAY THEY ARE
+# ---------------------------------------------------------------------------
+# The sensor has one receive antenna and no angle resolution, so two people
+# return a single superposed signal that looks nothing like one person. Multi-
+# person scenarios therefore get their own classes rather than being filed as
+# `ped`; that keeps the single-person class clean, and the training script can
+# merge them later if it wants to.
+#
+# Sideways passes get the `cross` class and are never labelled `ped`. A crossing
+# walker produces almost no radial Doppler, so calling one a pedestrian would
+# teach the model that "pedestrian" sometimes means "almost no signal" — which is
+# what background looks like. Kept separate they are genuinely valuable: a
+# crossing button must NOT fire for someone walking past, and this is the only
+# data that teaches that.
+#
+# No vehicles are recorded in this set.
+
+location: locB_outdoor_path
+description: >-
+  Open campus parking lot, clear on all sides, sensor on the tripod at 1.0 m
+  firing along the long axis away from parked cars and buildings. Ground taped
+  at the near, mid and far bands on the centre line. Record weather, wind and
+  surface (dry, wet, gravel) in the logbook — they are the main things that
+  change between outdoor sessions, and wet tarmac in particular changes the
+  clutter floor.
+
+subjects: [p1, p2, p3]
+
+durations:
+  slow: 25
+  normal: 20
+  fast: 15
+  # A rider with feet still on the pedals. Same length as a normal pass; the
+  # separate name is what makes the case findable in the dataset.
+  coast: 20
+
+classes:
+  # ---------------------------------------------------------------- background
+  # Outdoors the background is alive in a way the indoor room was not: wind in
+  # vegetation, distant traffic, people crossing the lot well outside the beam.
+  # A classifier that has never seen any of it will confidently hallucinate
+  # pedestrians on the first windy day.
+  #
+  # The `standing` takes are the hardest honest case: a stationary person is
+  # background by the class definition but is still a body in the beam returning
+  # a breathing modulation. Sampled at three ranges so the model meets it where
+  # it will actually occur.
+  - name: bg
+    kind: background
+    blocks:
+      - {source: empty,      distance: far,  repeats: 6, seconds: 60, note: "Lot empty, nobody in the beam. Baseline clutter. Note wind."}
+      - {source: vegetation, distance: mid,  repeats: 4, seconds: 60, note: "Swaying vegetation or a tree line in the beam. Note wind strength."}
+      - {source: distant,    distance: far,  repeats: 3, seconds: 60, note: "Distant traffic audible and visible but outside the beam."}
+      - {source: bystanders, distance: far,  repeats: 3, seconds: 60, note: "People crossing the lot well outside the beam. Team members only."}
+      - {source: standing,   distance: near, repeats: 3, seconds: 60, note: "Subject stands still on the axis. Breathing and sway only."}
+      - {source: standing,   distance: mid,  repeats: 3, seconds: 60, note: "As above, mid range."}
+      - {source: standing,   distance: far,  repeats: 2, seconds: 60, note: "As above, at the far band."}
+      - {source: operator,   distance: near, repeats: 2, seconds: 30, note: "Operator moves behind the sensor, beam otherwise clear."}
+
+  # ------------------------------------------------------------ one pedestrian
+  # The reference class. Vary clothing between subjects rather than within them
+  # (p1 bulky coat, p2 backpack, p3 ordinary) and record it in the logbook — that
+  # keeps the factor readable instead of scrambling it into every cell.
+  - name: ped
+    kind: subject
+    blocks:
+      - {geometry: approach, distance: far, speed: slow,   repeats: 1}
+      - {geometry: approach, distance: far, speed: normal, repeats: 3}
+      - {geometry: approach, distance: far, speed: fast,   repeats: 2}
+      - {geometry: approach, distance: mid, speed: normal, repeats: 2}
+      - {geometry: depart,   distance: far, speed: normal, repeats: 2}
+      - {geometry: depart,   distance: far, speed: fast,   repeats: 1}
+      - {geometry: depart,   distance: mid, speed: normal, repeats: 1}
+
+  # ----------------------------------------------------------- two pedestrians
+  # Walking side by side, roughly in step is fine — do not choreograph it. The
+  # two subjects are the interesting variable, so g1 and g2 should be different
+  # pairs, and the members go in the logbook.
+  - name: ped2
+    kind: subject
+    subjects: [g1, g2]
+    blocks:
+      - {geometry: approach, distance: far, speed: normal, repeats: 3}
+      - {geometry: approach, distance: far, speed: fast,   repeats: 1}
+      - {geometry: approach, distance: mid, speed: normal, repeats: 1}
+      - {geometry: depart,   distance: far, speed: normal, repeats: 2}
+      - {geometry: depart,   distance: far, speed: fast,   repeats: 1}
+
+  # --------------------------------------------------------- three pedestrians
+  - name: ped3
+    kind: subject
+    subjects: [g1]
+    blocks:
+      - {geometry: approach, distance: far, speed: normal, repeats: 3}
+      - {geometry: approach, distance: far, speed: fast,   repeats: 1}
+      - {geometry: approach, distance: mid, speed: normal, repeats: 1}
+      - {geometry: depart,   distance: far, speed: normal, repeats: 2}
+      - {geometry: depart,   distance: far, speed: fast,   repeats: 1}
+
+  # ------------------------------------------------------------ cane, one user
+  # Weighted toward `slow` because that is how a cane is actually used. The cane
+  # plants and swings at a different rate from the legs, which is the whole
+  # signal here — a real walking cane, used properly, not a stick carried along.
+  # If nobody on the team uses one, borrow a proper cane rather than improvising:
+  # a broom handle swung by an able-bodied walker is a different signature and
+  # would be mislabelled data.
+  - name: cane
+    kind: subject
+    subjects: [p1, p2]
+    blocks:
+      - {geometry: approach, distance: far, speed: slow,   repeats: 2}
+      - {geometry: approach, distance: far, speed: normal, repeats: 3}
+      - {geometry: approach, distance: mid, speed: normal, repeats: 1}
+      - {geometry: depart,   distance: far, speed: slow,   repeats: 1}
+      - {geometry: depart,   distance: far, speed: normal, repeats: 1}
+
+  # -------------------------------------------- cane user with someone alongside
+  # The companion walks beside the cane user at the same pace, close enough that
+  # the two cannot be separated in range. This is the realistic crossing-button
+  # case and the hardest one in the set.
+  - name: canegrp
+    kind: subject
+    subjects: [g1]
+    blocks:
+      - {geometry: approach, distance: far, speed: slow,   repeats: 2}
+      - {geometry: approach, distance: far, speed: normal, repeats: 3}
+      - {geometry: approach, distance: mid, speed: normal, repeats: 1}
+      - {geometry: depart,   distance: far, speed: slow,   repeats: 1}
+      - {geometry: depart,   distance: far, speed: normal, repeats: 1}
+
+  # ------------------------------------------------------------------- bicycle
+  # The most passes per rider of any class, for a physical reason: dwell time is
+  # shortest here, so each pass yields the fewest pedal cycles and the periodicity
+  # is the hardest thing in the dataset to capture.
+  #
+  # The coasting takes matter more than their two slots suggest. A rider with feet
+  # still is close to a rigid body with no limb modulation — the hardest cyclist
+  # case and the one most likely to be confused with an e-scooter. Record it
+  # deliberately rather than avoiding it.
+  - name: cyc
+    kind: subject
+    subjects: [p1, p2]
+    blocks:
+      - {geometry: approach, distance: far, speed: slow,   repeats: 2}
+      - {geometry: approach, distance: far, speed: normal, repeats: 4}
+      - {geometry: approach, distance: far, speed: fast,   repeats: 2}
+      - {geometry: approach, distance: far, speed: coast,  repeats: 2}
+      - {geometry: depart,   distance: far, speed: normal, repeats: 3}
+      - {geometry: depart,   distance: far, speed: fast,   repeats: 1}
+      - {geometry: depart,   distance: mid, speed: normal, repeats: 2}
+
+  # ----------------------------------------------------------------- e-scooter
+  # A standing rider on a scooter is nearly a rigid body: no pedalling, little
+  # limb motion. Separating it from a coasting cyclist is the sharpest test in
+  # this dataset, which is why both are recorded at matching speeds.
+  - name: sct
+    kind: subject
+    subjects: [p1, p2]
+    blocks:
+      - {geometry: approach, distance: far, speed: slow,   repeats: 2}
+      - {geometry: approach, distance: far, speed: normal, repeats: 4}
+      - {geometry: approach, distance: far, speed: fast,   repeats: 2}
+      - {geometry: depart,   distance: far, speed: normal, repeats: 3}
+      - {geometry: depart,   distance: far, speed: fast,   repeats: 1}
+      - {geometry: depart,   distance: mid, speed: normal, repeats: 2}
+
+  # -------------------------------------------------------- sideways / crossing
+  # `lr` is left to right across the beam, `rl` is right to left. The distance
+  # band here means the closest approach to the sensor, not a start marker.
+  #
+  # Expect these to look almost empty — that is the point, not a fault. Radial
+  # velocity is what the sensor measures, and a target moving perpendicular to
+  # the beam has almost none. They are recorded so the model learns that a person
+  # walking past is not a person approaching. Split evenly between directions so
+  # no direction bias can be learned.
+  - name: cross
+    kind: subject
+    blocks:
+      - {geometry: lr, distance: mid,  speed: normal, repeats: 2}
+      - {geometry: lr, distance: mid,  speed: fast,   repeats: 1}
+      - {geometry: lr, distance: near, speed: normal, repeats: 1}
+      - {geometry: rl, distance: mid,  speed: normal, repeats: 2}
+      - {geometry: rl, distance: mid,  speed: fast,   repeats: 1}
+      - {geometry: rl, distance: near, speed: normal, repeats: 1}

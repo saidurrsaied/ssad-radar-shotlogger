@@ -1,0 +1,76 @@
+# Indoor room with walls on three sides. Location A of the campaign.
+#
+# This room produces two of the four classes: there is no bicycle and no
+# scooter here, so the cyclist class comes entirely from the outdoor plans.
+# That is also why this location cannot be the held-out test set -- a test set
+# with no cyclist cannot measure the discrimination the project rests on.
+#
+# Classes are expanded in the order listed below, and that order is the order
+# the session is run in. Background comes first because the empty-room
+# signature has to be captured before anyone has walked through the space.
+
+location: locA_indoor_3wall
+description: >-
+  Indoor room, walls on three sides, sensor at the closed end firing along the
+  open axis at 1.0 m height. Floor taped at 1, 2, 4 and 6 m on the centre line.
+
+# Default subjects for every class of kind "subject" unless a class overrides it.
+subjects: [p1, p2, p3]
+
+# Recording length in seconds, by speed, for subject classes.
+durations:
+  slow: 25
+  normal: 20
+  fast: 15
+
+classes:
+  # ---------------------------------------------------------------- background
+  # No subject. The geometry slot carries the disturbance source instead, speed
+  # is "na" and subject is "p0", so background filenames parse on the same split
+  # as everything else.
+  #
+  # The eight "standing" takes are the most valuable rows here: a stationary
+  # person is background by the guide's class definition but is still a body in
+  # the beam returning a breathing modulation, and it is the exact case where a
+  # pedestrian detector embarrasses itself.
+  - name: bg
+    kind: background
+    blocks:
+      - {source: empty,     distance: 6m, repeats: 6, seconds: 60, note: "Room empty, doors shut, nobody moving. Baseline clutter."}
+      - {source: hvac,      distance: 6m, repeats: 4, seconds: 60, note: "Room empty, ventilation/AC running."}
+      - {source: trolley,   distance: 4m, repeats: 5, seconds: 30, note: "Lab trolley or office chair rolled through the beam."}
+      - {source: door,      distance: 6m, repeats: 4, seconds: 30, note: "Door at the open end opened and closed."}
+      - {source: umbrella,  distance: 3m, repeats: 3, seconds: 30, note: "Umbrella opened, closed, rotated."}
+      - {source: standing,  distance: 2m, repeats: 3, seconds: 60, note: "Subject stands still on the axis. Breathing only."}
+      - {source: standing,  distance: 4m, repeats: 3, seconds: 60, note: "Subject stands still on the axis. Breathing only."}
+      - {source: standing,  distance: 6m, repeats: 2, seconds: 60, note: "Subject stands still on the axis. Breathing only."}
+      - {source: operator,  distance: 1m, repeats: 2, seconds: 30, note: "Operator moves behind the sensor, beam otherwise clear."}
+      - {source: fan,       distance: 4m, repeats: 2, seconds: 60, note: "Rotating fan in the beam, target-free."}
+
+  # ---------------------------------------------------------------- pedestrian
+  # 22 per subject. Clothing is varied between subjects rather than within them
+  # (p1 bulky coat, p2 backpack, p3 ordinary), which keeps the factor readable
+  # instead of scrambling it into every cell -- record it in the logbook.
+  #
+  # Diagonals carry a warning from the physics rather than the protocol: the
+  # sensor measures radial velocity only, so the more oblique the path the less
+  # Doppler a walker produces. Keep them shallow and log the actual angle.
+  - name: ped
+    kind: subject
+    blocks:
+      - {geometry: approach, distance: 6m, speed: slow,   repeats: 1}
+      - {geometry: approach, distance: 6m, speed: normal, repeats: 3}
+      - {geometry: approach, distance: 6m, speed: fast,   repeats: 2}
+      - {geometry: approach, distance: 4m, speed: slow,   repeats: 1}
+      - {geometry: approach, distance: 4m, speed: normal, repeats: 2}
+      - {geometry: approach, distance: 4m, speed: fast,   repeats: 1}
+      - {geometry: approach, distance: 2m, speed: normal, repeats: 1}
+      - {geometry: approach, distance: 2m, speed: fast,   repeats: 1}
+      - {geometry: depart,   distance: 6m, speed: slow,   repeats: 1}
+      - {geometry: depart,   distance: 6m, speed: normal, repeats: 2}
+      - {geometry: depart,   distance: 6m, speed: fast,   repeats: 1}
+      - {geometry: depart,   distance: 4m, speed: normal, repeats: 1}
+      - {geometry: depart,   distance: 2m, speed: normal, repeats: 1}
+      - {geometry: diagonal, distance: 6m, speed: normal, repeats: 1}
+      - {geometry: diagonal, distance: 4m, speed: normal, repeats: 2}
+      - {geometry: diagonal, distance: 4m, speed: fast,   repeats: 1}
