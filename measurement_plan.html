@@ -283,34 +283,43 @@
 <div class="wrap">
 
 <header class="mast">
-  <p class="eyebrow">Measurement Plan &middot; Location A &middot; Dataset workstream</p>
+  <p class="eyebrow">Measurement Plan &middot; Location A &middot; Two indoor sessions</p>
   <h1>Three-Wall Indoor Campaign</h1>
-  <p class="standfirst">One hundred recordings of pedestrian and background micro-Doppler in an enclosed indoor space, following the collection protocol in section&nbsp;6 of the getting-started guide. No bicycle or scooter is available in this room.</p>
+  <p class="standfirst">Two hundred recordings of pedestrian and background micro-Doppler in one enclosed indoor room. Session one varies where and how fast a person walks; session two varies what they are carrying. Collection protocol from section&nbsp;6 of the getting-started guide.</p>
   <div class="factbar">
-    <div><span class="fact-k">Recordings</span><span class="fact-v">100</span></div>
-    <div><span class="fact-k">Classes</span><span class="fact-v">2 of 4</span></div>
-    <div><span class="fact-k">Beam-on time</span><span class="fact-v">48.2 min</span></div>
-    <div><span class="fact-k">Session length</span><span class="fact-v">~3.5 h</span></div>
+    <div><span class="fact-k">Recordings</span><span class="fact-v">200</span></div>
+    <div><span class="fact-k">Sessions</span><span class="fact-v">2</span></div>
+    <div><span class="fact-k">Labels</span><span class="fact-v">7</span></div>
+    <div><span class="fact-k">Beam-on time</span><span class="fact-v">84.2 min</span></div>
     <div><span class="fact-k">Subjects</span><span class="fact-v">3</span></div>
   </div>
 </header>
 
 <section>
-  <h2><span class="num">01</span>What this session does and does not deliver</h2>
+  <h2><span class="num">01</span>What this campaign delivers, and what it does not</h2>
   <hr class="rule">
   <div class="prose">
-    <p>This room produces two of the project's four classes. There is no bicycle and no scooter here, so this session records pedestrians and background, and the cyclist class comes entirely from the outdoor sessions. That single fact settles two things the plan would otherwise have to leave open, and it creates one risk that has to be handled outdoors rather than here.</p>
-    <p>Said plainly so nobody is surprised at M3: after this session you will have 66 pedestrian and 34 background passes, and zero cyclist passes. The guide asks for at least one hundred per class from at least three subjects in at least two locations.</p>
+    <p>Two sessions, one room, two hundred recordings. <strong>Session one</strong> varies the path: three trajectories against three floor markers at three speeds, walked empty-handed. <strong>Session two</strong> holds the path and the pace still and varies the human condition instead &mdash; an open umbrella at three tilts, a loaded bag, a carried cane, and empty-handed control passes recorded the same day so the comparison is clean. Same mounting, same floor tape, same frozen sensor configuration, so the two sets concatenate into one dataset rather than sitting beside each other.</p>
+    <p>What is not here is a bicycle or a scooter. Neither can be ridden in this room, and the outdoor half of the campaign is not being run, so this dataset contains <em>no cyclist class at all</em>. The problem it can support is pedestrian versus background, with the carried-object conditions as a robustness axis inside the pedestrian class. That is a narrower problem than the four-class one the getting-started guide sketches, and the report should say so rather than let a reader assume otherwise.</p>
+  </div>
+
+  <div class="alloc">
+    <div><p class="k">Pedestrian, merged</p><p class="v">162</p><p class="s">66 from session one, 96 from session two across six condition labels</p></div>
+    <div><p class="k">Background</p><p class="v">38</p><p class="s">34 from session one, 4 from session two</p></div>
+    <div><p class="k">Subjects</p><p class="v">3</p><p class="s">Same three people, same IDs, in both sessions</p></div>
+    <div><p class="k">Cyclist</p><p class="v">0</p><p class="s">Out of scope: no bicycle indoors, no outdoor session</p></div>
   </div>
 
   <div class="note gate">
-    <p class="note-h">This room cannot be the held-out test location</p>
-    <p>The guide holds one location back entirely as a test set. That location has to contain the classes you need to measure, and the project's core promise is pedestrian versus cyclist versus background. A test set with no cyclist in it cannot measure the discrimination that decides the project, so the held-out location must be an outdoor one. Record this room as training data and write that in the logbook header before <code>seq 1</code>.</p>
+    <p class="note-h">Two sessions in one room are not two locations</p>
+    <p>The guide asks for at least two locations with one held back entirely as a test set, and the reason is domain shift: a network that has only ever seen one room can learn the room &mdash; its clutter floor, its multipath, its noise level &mdash; and score well in validation having understood nothing about gait. Recording twice in the same room does not fix that. It captures a different <em>day</em>, not a different site, and calling the second session a second location in the report would be false.</p>
+    <p style="margin-top:10px">With the outdoor sessions dropped, the honest substitute is a <strong>subject-held-out split</strong>: train on two people, test on the third, and report it as generalisation to a new person rather than to a new environment. Write that decision into the logbook header before <code>seq 1</code> of session two, and state the limitation plainly at M3. If a second room becomes available later, one afternoon of recording buys back the stronger claim.</p>
   </div>
 
-  <div class="note gate">
-    <p class="note-h">The confound this creates, and how to kill it outdoors</p>
-    <p>If every cyclist recording is outdoors and every indoor recording is pedestrian or background, then indoors versus outdoors predicts <em>not-cyclist</em> perfectly. A convolutional network will happily learn the room &mdash; its clutter floor, its multipath, its noise level &mdash; instead of learning gait, and it will score well in validation while having understood nothing. The fix is not available in this room. It is a constraint on the outdoor sessions: <strong>record all three classes at every outdoor location</strong>, so that environment and class vary independently. If the outdoor sessions only capture cyclists, this indoor set actively damages the dataset rather than enlarging it.</p>
+  <div class="note">
+    <p class="note-h">Where the counts land against the guide's targets</p>
+    <p>The guide asks for at least a hundred passes per class from at least three subjects. Merged into one pedestrian class, session one and session two give <strong>162 passes from three subjects</strong>, which clears it comfortably. Kept apart, each of the six condition labels sits between 15 and 87 and none of them clears it &mdash; the target applies to the class that gets trained on, not to every label in a filename.</p>
+    <p style="margin-top:10px">Background is the one genuine shortfall: <strong>38 files against a target of 100</strong>. It is also the cheapest thing in the campaign to fix, because background needs no subject and no walk-back &mdash; an hour of empty room, HVAC, door and trolley takes would close most of the gap. Note the shortfall now; do not discover it at M3.</p>
   </div>
 </section>
 
@@ -318,8 +327,8 @@
   <h2><span class="num">02</span>The configuration freeze comes first</h2>
   <hr class="rule">
   <div class="prose">
-    <p>Section 6 is blunt about this: recordings made with different sweep or range settings cannot be cleanly mixed into one training set. Every one of the hundred files below must carry an identical sensor configuration, and so must every file from the second location later.</p>
-    <p>That freeze has now happened. The configuration below was measured on the sensor and written to <code>config/session_config.json</code>, and the Shot Logger checks every recording against it, so drift cannot pass unnoticed. What remains for the pilot is the part hardware could not answer from a bench: that the mounting, the range and the floor markers suit this particular room. Run a handful of throwaway takes into a <code>pilot/</code> folder, look at the spectrograms, then start the count at one.</p>
+    <p>Section 6 is blunt about this: recordings made with different sweep or range settings cannot be cleanly mixed into one training set. Every one of the two hundred files in this campaign must carry an identical sensor configuration &mdash; both sessions, whatever the gap between them.</p>
+    <p>That freeze has happened, and session one has been recorded against it. The configuration below was measured on the sensor and written to <code>config/session_config.json</code>, and the Shot Logger checks every recording against it, so drift cannot pass unnoticed. For session two the pilot step is shorter than it was the first time: re-mount, re-tape, run two or three throwaway takes into a <code>pilot/</code> folder to confirm the room is where you left it, then start the count at one.</p>
   </div>
 
   <div class="note gate">
@@ -352,7 +361,7 @@
       </thead>
       <tbody>
         <tr><td class="f">sweeps_per_frame</td><td class="f">64</td><td>One coherent burst is one spectrogram column. 64 gives 0.213 m/s Doppler bins, enough to separate limb returns from the torso line.</td></tr>
-        <tr><td class="f">sweep_rate</td><td class="f">5500 Hz</td><td>Sets the unambiguous velocity to &plusmn;6.82 m/s. Sized for the <em>outdoor cyclist</em>, not the indoor walker, because the freeze is global and this number has to survive every environment.</td></tr>
+        <tr><td class="f">sweep_rate</td><td class="f">5500 Hz</td><td>Sets the unambiguous velocity to &plusmn;6.82 m/s &mdash; considerably more headroom than an indoor walker needs. It stays exactly as frozen: one configuration covers every recording in the campaign, and re-freezing now would split the dataset in two.</td></tr>
         <tr><td class="f">continuous_sweep_mode</td><td class="f">false</td><td>Burst mode. The link cannot carry gapless slow time, and the FFT does not need it &mdash; only the 11.6 ms burst has to be coherent.</td></tr>
         <tr><td class="f">frame_rate</td><td class="f">25 Hz</td><td>25 spectrogram columns per second at 141 kB/s. The link saturates between 161 and 187 kB/s, so this keeps about 20% margin.</td></tr>
         <tr><td class="f">start_point</td><td class="f">400 (1.0 m)</td><td>Clear of the sensor's direct leakage.</td></tr>
@@ -380,9 +389,9 @@
   </div>
 
   <div class="note gate">
-    <p class="note-h">The range is provisional &mdash; it will grow before recording starts</p>
-    <p>Everything above is measured and correct, but 1.00&ndash;6.04 m was chosen around <em>this room</em>. It is too short for the outdoor half of the campaign: dwell time is set by the range span, so at 6 m a cyclist at 5 m/s is in the beam for about <strong>one second</strong> &mdash; roughly a single pedal cycle, when pedal cadence is the entire feature that identifies a cyclist. A bench session will extend the range before any recording begins, and the configuration is shared by every location.</p>
-    <p style="margin-top:10px">This indoor plan is unaffected. The room is only six metres deep, so the extra range simply measures the far wall &mdash; static clutter, removed by the same mean subtraction that removes the rest of the room. The floor markers and the shot list stay exactly as written. What will change is the number in the table above, and its sha256.</p>
+    <p class="note-h">The range is now fixed, and session one is what fixed it</p>
+    <p>1.00&ndash;6.04 m was chosen around <em>this room</em>, and for an indoor campaign that is the right span: the room is six metres deep, the far marker sits inside the beam, and a walker at 1.4 m/s gets about 3.6 s of dwell &mdash; several full gait cycles per pass. The argument for extending it was never about this room. It was about giving an outdoor cyclist enough pedal cycles in the beam, and with the outdoor sessions dropped that argument goes with them.</p>
+    <p style="margin-top:10px">More to the point, the question is closed by facts on disk. Session one is <strong>already recorded</strong> against this configuration. Changing the range now would orphan those hundred files: session two would no longer share a hash with them, and <code>campaign_report.py</code> would report two configurations, which is the dataset silently splitting in two. The bench procedure in <code>BENCH_CHECK.md</code> still has a job &mdash; confirming SNR at the far marker and that the mounting suits the room &mdash; but it must not end in a re-freeze.</p>
   </div>
 
   <div class="prose">
@@ -432,7 +441,7 @@
   <h3>What three walls do to the data</h3>
   <div class="prose">
     <p>The walls themselves are static, so they sit at zero Doppler and the clutter removal in feature extraction will take them out. That is the easy half.</p>
-    <p>The hard half is that a <em>moving</em> target also reaches the sensor by bouncing off a side wall. That echo arrives later, so it appears at a longer apparent range, and its radial velocity is the projection along the folded path rather than the direct one. In the spectrogram it shows up as a faint second track shadowing the real one at a different velocity. It is not static, so no clutter filter removes it, and the network will happily learn it as a feature of this room, which is exactly the domain shift the two-location rule exists to catch.</p>
+    <p>The hard half is that a <em>moving</em> target also reaches the sensor by bouncing off a side wall. That echo arrives later, so it appears at a longer apparent range, and its radial velocity is the projection along the folded path rather than the direct one. In the spectrogram it shows up as a faint second track shadowing the real one at a different velocity. It is not static, so no clutter filter removes it, and the network will happily learn it as a feature of this room. With every recording in the campaign made in this one room, there is no second site to catch that, which is why it has to be reduced at the source rather than detected later.</p>
     <p>You cannot eliminate it indoors. You can reduce it: keep subjects on the centre line, and if the lab has RF absorber, put it at the specular points roughly halfway along each side wall. Whatever you do, note it in the logbook, and note the room's width &mdash; a narrow room folds harder.</p>
   </div>
 
@@ -443,7 +452,7 @@
 </section>
 
 <section>
-  <h2><span class="num">04</span>How the hundred are allocated</h2>
+  <h2><span class="num">04</span>Session one &mdash; trajectory and speed</h2>
   <hr class="rule">
 
   <div class="alloc">
@@ -451,10 +460,15 @@
     <div><p class="k">Background</p><p class="v">34</p><p class="s">Room signature, clutter, and stationary people</p></div>
   </div>
 
+  <div class="note">
+    <p class="note-h">Status &mdash; recorded</p>
+    <p>This session is complete. It is documented here because it fixes everything session two has to match: the mounting, the floor markers, the subject IDs and the configuration hash. Its shot list is <code>plans/locA_indoor_3wall.csv</code>.</p>
+  </div>
+
   <div class="prose">
-    <p>With two classes instead of four, the freed slots go where this room is genuinely better than an outdoor site rather than being spread evenly. Two thirds to pedestrian, one third to background.</p>
+    <p>Two classes share the hundred, so the split is two thirds pedestrian, one third background &mdash; weighted rather than spread evenly, because this room is genuinely better at one of them than the other.</p>
     <p>Pedestrian gets the larger share because gait is the signal the whole project rests on and it varies more between people than any other factor. Twenty-two passes per subject is enough to cover three trajectories against three distance markers and three speeds without any cell resting on a single take, which matters because one bad recording in a factor you sampled once silently removes that factor.</p>
-    <p>Background gets a third, which is more than it had when four classes shared the hundred, and this is the right room to spend it in. An enclosed space with three walls has a richer and more repeatable clutter environment than an open car park: doors, ventilation, furniture, and hard surfaces that produce the multipath discussed above. The guide warns that a classifier which has never seen nothing will confidently hallucinate pedestrians, and indoor background is the cheapest and most varied way to fix that.</p>
+    <p>Background gets a third, and this is the right room to spend it in. An enclosed space with three walls has a richer and more repeatable clutter environment than open ground: doors, ventilation, furniture, and hard surfaces that produce the multipath discussed above. The guide warns that a classifier which has never seen nothing will confidently hallucinate pedestrians, and indoor background is the cheapest and most varied way to fix that.</p>
   </div>
 
   <h3>Pedestrian &mdash; per subject, repeated for p1, p2, p3</h3>
@@ -519,7 +533,102 @@
 </section>
 
 <section>
-  <h2><span class="num">05</span>Naming, folders and the logbook</h2>
+  <h2><span class="num">05</span>Session two &mdash; the human condition</h2>
+  <hr class="rule">
+
+  <div class="alloc">
+    <div><p class="k">Control</p><p class="v">21</p><p class="s">Empty-handed, same day, same clothes</p></div>
+    <div><p class="k">Umbrella</p><p class="v">45</p><p class="s">Three tilts &times; 15</p></div>
+    <div><p class="k">Bag</p><p class="v">15</p><p class="s">Loaded, hanging from one hand</p></div>
+    <div><p class="k">Cane</p><p class="v">15</p><p class="s">Carried, not used</p></div>
+    <div><p class="k">Background</p><p class="v">4</p><p class="s">Clutter reference and the standing confuser</p></div>
+  </div>
+
+  <div class="prose">
+    <p>The second hundred is recorded in the same room, off the same floor tape, against the same frozen configuration. What changes is the factor. Session one asked where and how fast the person walks; this one asks <em>what they are carrying</em>, and to make that question answerable it holds everything else still: one pace, one line, two directions, two markers.</p>
+    <p>That is the whole design. Session one's sweep over three speeds and three markers is not repeated here, because repeating it would multiply cells instead of objects &mdash; six conditions against nine path-and-speed combinations is fifty-four cells, and a hundred recordings spread over fifty-four cells leaves most of them resting on a single take. Fixing the path buys the depth back: every condition gets five takes per person, and the control gets seven.</p>
+    <p>Subjects are the same three people under the same IDs as session one &mdash; <span class="mono">p1</span>&nbsp;Bernard, <span class="mono">p2</span>&nbsp;Aish, <span class="mono">p3</span>&nbsp;Meghana. Keep the mapping identical in the logbook. <code>campaign_report.py</code> counts distinct subject IDs per class, so a returning person recorded under a fresh ID reports as two people who each did half the work.</p>
+  </div>
+
+  <h3>What each condition is</h3>
+  <div class="scroll">
+    <table>
+      <caption>Six labels &middot; one prop each, shared by all three subjects</caption>
+      <thead>
+        <tr><th>Label</th><th>What the subject carries</th><th>What it is there to capture</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="f">ped</td><td>Nothing. Arms swinging freely.</td><td>The control every other row is compared against, recorded the same day in the same clothes.</td></tr>
+        <tr><td class="f">umbup</td><td>Umbrella open, handle vertical, canopy level over the head.</td><td>The neutral pose: gait still visible, with a large slow-moving reflector added on top of it.</td></tr>
+        <tr><td class="f">umbfwd</td><td>Umbrella tilted 30&ndash;40&deg; in the walking direction.</td><td>On approach the canopy shields torso and legs. Expect a strong return with the gait largely gone &mdash; which is what background looks like. The hardest row in the plan and the most valuable.</td></tr>
+        <tr><td class="f">umbback</td><td>Umbrella tilted 30&ndash;40&deg; against the walking direction.</td><td>The mirror case: on approach the body stays exposed and the canopy contributes its own near-zero-Doppler component.</td></tr>
+        <tr><td class="f">bag</td><td>Loaded bag, 2&ndash;3 kg, hanging from one hand at the side.</td><td>A loaded arm swings less than a free one, so the two arms stop mirroring each other. That asymmetry is the feature &mdash; an empty tote damps nothing and proves nothing.</td></tr>
+        <tr><td class="f">canehand</td><td>Cane carried in one hand, tip clear of the floor, ordinary gait.</td><td>A stick held rather than used. Not the same thing as a mobility cane, and deliberately not labelled <code>cane</code> &mdash; see below.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note gate">
+    <p class="note-h">Tilt is defined relative to the walker, never to the sensor</p>
+    <p>Forward means <em>in the direction of travel</em>. On an approach that points the canopy at the sensor; on a depart the identical pose points it away. That asymmetry is intentional &mdash; the pose is what the person does, and the geometry column already records which way they were walking.</p>
+    <p style="margin-top:10px">An operator who helpfully &ldquo;corrects&rdquo; the tilt on depart passes so the canopy always faces the sensor collapses <code>umbfwd</code> and <code>umbback</code> into each other, and nothing downstream will notice. Brief the subject once, out loud, before the first umbrella take.</p>
+  </div>
+
+  <h3>Per subject, repeated for p1, p2, p3</h3>
+  <div class="scroll">
+    <table>
+      <caption>32 recordings per subject &middot; 96 total &middot; every take at normal pace, 20 s</caption>
+      <thead>
+        <tr><th>Label</th><th class="n">approach 6 m</th><th class="n">depart 6 m</th><th class="n">approach 4 m</th><th class="n">depart 4 m</th><th class="n">Per subject</th><th class="n">&times; 3</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="f">ped</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">1</td><td class="n">7</td><td class="n">21</td></tr>
+        <tr><td class="f">umbup</td><td class="n">2</td><td class="n">1</td><td class="n">1</td><td class="n">1</td><td class="n">5</td><td class="n">15</td></tr>
+        <tr><td class="f">umbfwd</td><td class="n">2</td><td class="n">1</td><td class="n">1</td><td class="n">1</td><td class="n">5</td><td class="n">15</td></tr>
+        <tr><td class="f">umbback</td><td class="n">2</td><td class="n">1</td><td class="n">1</td><td class="n">1</td><td class="n">5</td><td class="n">15</td></tr>
+        <tr><td class="f">bag</td><td class="n">2</td><td class="n">1</td><td class="n">1</td><td class="n">1</td><td class="n">5</td><td class="n">15</td></tr>
+        <tr><td class="f">canehand</td><td class="n">2</td><td class="n">1</td><td class="n">1</td><td class="n">1</td><td class="n">5</td><td class="n">15</td></tr>
+      </tbody>
+      <tfoot><tr><td>Per subject</td><td class="n">13</td><td class="n">7</td><td class="n">6</td><td class="n">6</td><td class="n">32</td><td class="n">96</td></tr></tfoot>
+    </table>
+  </div>
+
+  <div class="prose">
+    <p><span class="geo approach">approach</span> from the 6 m tape means start on it and walk to the 1 m tape; from the 4 m tape means start already walking as you cross it. <span class="geo depart">depart</span> means start at 1 m and walk away to the marker named. No diagonals: an oblique path costs radial Doppler, and this session is trying to measure a small change in the signature rather than fight for signal.</p>
+    <p>The control gets seven takes to every condition's five because all five comparisons are made against it. Session one's <code>ped</code> rows cannot do that job &mdash; they are a different day, so the clutter floor, the clothing and the room's contents all differ, and any difference between them and an umbrella take would be unattributable to the umbrella.</p>
+    <p><strong>One umbrella, one bag, one cane, for the whole session.</strong> Swapping props between people turns the object into a per-person factor and makes the three subjects incomparable. Canopy diameter, bag weight, which hand carried it and each subject's clothing all go in the logbook.</p>
+  </div>
+
+  <h3>Background &mdash; four rows, recorded first</h3>
+  <div class="scroll">
+    <table>
+      <caption>4 recordings &middot; 4.0 min</caption>
+      <thead>
+        <tr><th>Source</th><th>Marker</th><th class="n">Takes</th><th class="n">Each</th><th>Scene</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="geo static">empty</span></td><td class="f">6 m</td><td class="n">2</td><td class="n">60 s</td><td>Room empty, doors shut, nobody moving. This session's own clutter reference.</td></tr>
+        <tr><td><span class="geo static">umbstand</span></td><td class="f">4 m</td><td class="n">2</td><td class="n">60 s</td><td>Subject stands still on the axis holding the open umbrella upright. Breathing only.</td></tr>
+      </tbody>
+      <tfoot><tr><td colspan="2">Total</td><td class="n">4</td><td class="n">4.0 min</td><td>&nbsp;</td></tr></tfoot>
+    </table>
+  </div>
+
+  <div class="prose">
+    <p>The two empty takes are not padding. This is a different day in the same room, and the furniture, the doors and the HVAC state will not be exactly what they were. Two minutes of empty room is what lets anyone prove afterwards that the clutter floor did not move between the sessions &mdash; and if it did, which of the two hundred files are affected.</p>
+    <p><code>umbstand</code> is the confuser this class set most needs. A person standing still under an open umbrella is a large bright reflector with no gait at all. Without those two files, a network trained on walkers-under-umbrellas can learn that a big return plus an umbrella means pedestrian, and then fire at someone waiting at a crossing in the rain.</p>
+  </div>
+
+  <div class="note">
+    <p class="note-h">Why six labels rather than a hundred rows of <code>ped</code></p>
+    <p>A training script can merge <code>ped</code>, <code>umbup</code>, <code>umbfwd</code>, <code>umbback</code>, <code>bag</code> and <code>canehand</code> into one pedestrian class with a six-line mapping. It can never un-merge them. Put the condition in a note column and it survives exactly as long as the CSV stays next to the recordings; put it in the class slot of the filename and it travels through a folder copy, onto another machine, into someone else's loader. The cost is a longer class list; the benefit is that whether a person under an umbrella counts as a pedestrian stays a decision for whoever trains the network.</p>
+    <p style="margin-top:10px">Expect <code>campaign_report.py</code> to call all six short against its hundred-per-class target. That target applies to the class you train on, and merged into <code>ped</code> this session contributes 96 passes.</p>
+    <p style="margin-top:10px"><code>canehand</code> is not <code>cane</code> for the same reason. A mobility cane being <em>used</em> plants and swings at a rate unrelated to the legs, which is what would earn it a class of its own; a cane merely carried is much closer to a bare walker holding a stick. Filing both under one label would put two different signatures in one class. If a subject drifts into planting it in step, stop and re-record &mdash; that is a different class and it does not belong in this one.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">06</span>Naming, folders and the logbook</h2>
   <hr class="rule">
   <div class="prose">
     <p>Filenames follow the guide's fixed pattern exactly, so the label is readable from the name and no frame-level annotation is ever needed:</p>
@@ -527,27 +636,29 @@
   <div class="note">
     <p class="note-h">Pattern</p>
     <p><code>&lt;class&gt;_&lt;geometry&gt;_&lt;distance&gt;_&lt;speed&gt;_&lt;subject&gt;_take&lt;n&gt;.h5</code></p>
-    <p style="margin-top:10px">This session uses <code>ped</code> and <code>bg</code> only; <code>cyc</code> and the stretch class <code>sct</code> are reserved for the outdoor sessions and must use the identical pattern. Background reuses the geometry slot for the disturbance source, with <code>na</code> for speed and <code>p0</code> for subject &mdash; so <code>bg_trolley_4m_na_p0_take1.h5</code> still parses on the same split.</p>
+    <p style="margin-top:10px">Session one uses <code>ped</code> and <code>bg</code>. Session two adds <code>umbup</code>, <code>umbfwd</code>, <code>umbback</code>, <code>bag</code> and <code>canehand</code> in the same slot, so <code>umbfwd_approach_6m_normal_p1_take1.h5</code> parses on exactly the same split. Background reuses the geometry slot for the disturbance source, with <code>na</code> for speed and <code>p0</code> for subject &mdash; so <code>bg_trolley_4m_na_p0_take1.h5</code> parses on it too.</p>
   </div>
   <div class="prose">
-    <p>The full ordered list of all hundred filenames is generated, not hand-written, by <code>tools/make_shotlist.py</code> into <code>measurement_plan_shotlist.csv</code>. Print it and tick rows off in the room. The script asserts that all hundred names are unique before it writes, which is the failure this protocol is most prone to.</p>
-    <p>Store recordings as <code>data/locA_indoor3wall/&lt;class&gt;/</code>, one folder per class, matching the guide's one-class-per-recording rule.</p>
-    <p>The shared logbook needs a header block written once per session &mdash; date, room and building, room dimensions, wall materials, which end is open, whether absorber was used, the frozen configuration file name, the train-or-test decision from section 1 &mdash; and then one row per recording carrying only what varies: sequence number, filename, subject, clothing, and anything anomalous. Thirty seconds a recording, as the guide says, and it is what lets you diagnose a problem three weeks later.</p>
+    <p>Neither shot list is hand-written. Both are generated by <code>tools/make_shotlist.py</code> from a YAML plan &mdash; session one into <code>plans/locA_indoor_3wall.csv</code>, session two into <code>plans/locA2_indoor_objects.csv</code>. Print the one you are running and tick rows off in the room, or let the Shot Logger tick them for you. The script asserts that every filename in a plan is unique before it writes, which is the failure this protocol is most prone to.</p>
+    <p>Each session gets its own folder: <code>data/locA_indoor_3wall/&lt;class&gt;/</code> and <code>data/locA2_indoor_objects/&lt;class&gt;/</code>, one subfolder per class, matching the guide's one-class-per-recording rule. Keep them apart even though the room is the same &mdash; filenames repeat between plans by design, <code>ped_approach_6m_normal_p1_take1.h5</code> exists in both, and the session folder plus the <code>location</code> column are what tell them apart.</p>
+    <p>The shared logbook needs a header block written once per session &mdash; date, room and building, room dimensions, wall materials, which end is open, whether absorber was used, the frozen configuration file name, and the evaluation split decision from section 1 &mdash; and then one row per recording carrying only what varies: sequence number, filename, subject, clothing, and anything anomalous. For session two the header also carries the props: umbrella canopy diameter, bag weight, cane length, and which hand carried each. Thirty seconds a recording, as the guide says, and it is what lets you diagnose a problem three weeks later.</p>
   </div>
 </section>
 
 <section>
-  <h2><span class="num">06</span>Running order</h2>
+  <h2><span class="num">07</span>Running order</h2>
   <hr class="rule">
   <div class="prose">
-    <p>The shot list is ordered deliberately, and it is worth following rather than shuffling.</p>
-    <p>Background comes first, because the empty-room signature has to be captured before anyone has walked through the space and before the furniture moves. Then pedestrian, grouped by subject so that each person does their twenty-two passes in one block instead of being called back repeatedly.</p>
-    <p>Two people run the session: one operates the Exploration Tool and keeps the logbook, one is the target. Rotate so all three subjects get recorded, but never let the person in the beam also drive the laptop.</p>
+    <p>Both shot lists are ordered deliberately, and both are worth following rather than shuffling.</p>
+    <p>Background comes first in each, because the empty-room signature has to be captured before anyone has walked through the space and before the furniture moves. After that the two sessions order themselves on different principles, for a reason worth understanding rather than fixing.</p>
+    <p>Two people run a session: one operates the Exploration Tool and keeps the logbook, one is the target. Rotate so all three subjects get recorded, but never let the person in the beam also drive the laptop.</p>
   </div>
+
+  <h3>Session one &mdash; grouped by subject</h3>
 
   <div class="scroll">
     <table>
-      <caption>Session blocks</caption>
+      <caption>Session blocks &middot; <code>plans/locA_indoor_3wall.csv</code></caption>
       <thead>
         <tr><th class="n">Seq</th><th>Block</th><th class="n">Files</th><th class="n">Beam-on</th><th>Needs</th></tr>
       </thead>
@@ -561,21 +672,54 @@
       <tfoot><tr><td class="n">&nbsp;</td><td>Total</td><td class="n">100</td><td class="n">48.2 min</td><td>Allow ~3.5 h with walk-backs, logbook and checks.</td></tr></tfoot>
     </table>
   </div>
-  <p class="prose">Beam-on time is 48 minutes; the session is three and a half hours. The gap is walking back to the start marker, writing the logbook row, and the quality checks below. Plan for one session, or split cleanly at the end of the background block or a subject block &mdash; never mid-subject, and never across a day if you can avoid it, since the room will not be identical tomorrow.</p>
+  <p class="prose">Beam-on time is 48 minutes; the session is three and a half hours. The gap is walking back to the start marker, writing the logbook row, and the quality checks below. Each person does their twenty-two passes in one block rather than being called back repeatedly, because with no props to set up the subject is the thing that is expensive to move.</p>
+
+  <h3>Session two &mdash; grouped by prop</h3>
+  <div class="scroll">
+    <table>
+      <caption>Session blocks &middot; <code>plans/locA2_indoor_objects.csv</code></caption>
+      <thead>
+        <tr><th class="n">Seq</th><th>Block</th><th class="n">Files</th><th class="n">Beam-on</th><th>Needs</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="n">&mdash;</td><td>Re-mount, re-tape, short pilot</td><td class="n">~3</td><td class="n">&mdash;</td><td>Throwaway. Confirms the room is where you left it. No re-freeze.</td></tr>
+        <tr><td class="n">1&ndash;4</td><td>Background</td><td class="n">4</td><td class="n">4.0 min</td><td>Two empty, then two standing under the open umbrella.</td></tr>
+        <tr><td class="n">5&ndash;25</td><td>Control, empty-handed</td><td class="n">21</td><td class="n">7.0 min</td><td>p1, p2, p3 in turn. Nothing carried.</td></tr>
+        <tr><td class="n">26&ndash;40</td><td>Umbrella, upright</td><td class="n">15</td><td class="n">5.0 min</td><td>Umbrella opened once and kept open through the three umbrella blocks.</td></tr>
+        <tr><td class="n">41&ndash;55</td><td>Umbrella, tilted forward</td><td class="n">15</td><td class="n">5.0 min</td><td>Brief the tilt convention before the first take.</td></tr>
+        <tr><td class="n">56&ndash;70</td><td>Umbrella, tilted back</td><td class="n">15</td><td class="n">5.0 min</td><td>Same angle, mirrored.</td></tr>
+        <tr><td class="n">71&ndash;85</td><td>Bag</td><td class="n">15</td><td class="n">5.0 min</td><td>Bag loaded to 2&ndash;3 kg and weighed before <code>seq 71</code>.</td></tr>
+        <tr><td class="n">86&ndash;100</td><td>Cane, carried</td><td class="n">15</td><td class="n">5.0 min</td><td>Tip off the floor. Watch for it drifting into a planted step.</td></tr>
+      </tbody>
+      <tfoot><tr><td class="n">&nbsp;</td><td>Total</td><td class="n">100</td><td class="n">36.0 min</td><td>Allow ~2.5 h with walk-backs, logbook and checks.</td></tr></tfoot>
+    </table>
+  </div>
+  <p class="prose">Session two inverts session one's grouping: the prop stays fixed and the three subjects rotate through it, so each person is called back six times. That is deliberate. Setting up and briefing a condition is the expensive step here, and the alternative &mdash; one person doing all thirty-two of their takes in a block &mdash; would mean changing the prop eighteen times instead of six, with a fresh chance each time for the umbrella to be tilted the other way round.</p>
+  <p class="prose">Split either session cleanly at the end of a block if you must &mdash; never mid-subject, and never across a day if you can avoid it, since the room will not be identical tomorrow. If session two does span two days, re-record the two <code>bg_empty</code> takes on the second day and say so in the logbook.</p>
 </section>
 
 <section>
-  <h2><span class="num">07</span>Quality checks</h2>
+  <h2><span class="num">08</span>Quality checks</h2>
   <hr class="rule">
   <p class="prose">Data collection failures are silent. All of these are cheap and all of them have caught real problems in real campaigns.</p>
+  <h3>Both sessions</h3>
   <ul class="check">
-    <li><span class="box"></span><span>Before <code>seq 1</code>: the train-or-test decision is written in the logbook header.</span></li>
+    <li><span class="box"></span><span>Before <code>seq 1</code>: the evaluation split decision from section 1 &mdash; which subject is held out &mdash; is written in the logbook header.</span></li>
     <li><span class="box"></span><span>After the pilot: frame count in a 60 s file matches elapsed time &times; frame rate. No dropped frames.</span></li>
     <li><span class="box"></span><span>After every tenth recording: open the last file and look at the spectrogram. A target track should be visible by eye.</span></li>
     <li><span class="box"></span><span>Every file: size within a few percent of its neighbours of the same duration. An outlier means dropped frames.</span></li>
     <li><span class="box"></span><span>Every file: sensor configuration in the HDF5 matches the frozen configuration, byte for byte.</span></li>
     <li><span class="box"></span><span>End of session: re-record <code>bg_empty</code> and compare against the opening one. A changed room signature makes everything between them suspect.</span></li>
     <li><span class="box"></span><span>Before leaving: all 100 rows of the shot list are ticked and every filename on disk appears in the CSV.</span></li>
+  </ul>
+  <h3>Session two only</h3>
+  <ul class="check">
+    <li><span class="box"></span><span>Before <code>seq 1</code>: the configuration hash reported by the Shot Logger is the same one session one recorded against. If it is not, stop &mdash; the two hundred files will not form one dataset.</span></li>
+    <li><span class="box"></span><span>Before <code>seq 1</code>: the first <code>bg_empty</code> take is compared against session one's. A room that has changed a lot is worth knowing about before ninety-six passes, not after.</span></li>
+    <li><span class="box"></span><span>Before the first umbrella take: the tilt convention is briefed out loud &mdash; forward means in the walking direction, on approach <em>and</em> on depart.</span></li>
+    <li><span class="box"></span><span>At every prop change: the same umbrella, bag and cane as the previous block, and the weight in the bag unchanged. Recorded in the logbook header, not from memory.</span></li>
+    <li><span class="box"></span><span>During the cane block: the cane is carried, tip clear of the floor. A subject who starts planting it in step is recording a different class &mdash; stop and redo those takes.</span></li>
+    <li><span class="box"></span><span>Spot-check one <code>umbfwd</code> approach spectrogram early. A near-empty spectrogram is the expected result there, not a broken recording &mdash; but confirm the file itself is intact before recording fourteen more.</span></li>
   </ul>
   <div class="note">
     <p class="note-h">People who are not in the team</p>
@@ -584,7 +728,7 @@
 </section>
 
 <footer class="end">
-  <p>Derived from <em>Radar Micro-Doppler Classification: a getting-started guide for the team</em>, sections 3 and 6, Lab project, Signals and Systems for Automated Driving, FH Dortmund. Sensor configuration values are a starting point for the pilot and are not yet verified on hardware.</p>
+  <p>Derived from <em>Radar Micro-Doppler Classification: a getting-started guide for the team</em>, sections 3 and 6, Lab project, Signals and Systems for Automated Driving, FH Dortmund. Sensor configuration values were measured on the XE125 and are frozen in <code>config/session_config.json</code>; session one is recorded against them. The plans behind sections 4 and 5 are <code>plans/locA_indoor_3wall.yaml</code> and <code>plans/locA2_indoor_objects.yaml</code>. This is an indoor-only campaign: no cyclist or scooter class is recorded, and the guide's two-location requirement is not met.</p>
 </footer>
 
 </div>

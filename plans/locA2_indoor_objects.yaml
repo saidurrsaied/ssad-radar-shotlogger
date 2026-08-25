@@ -1,0 +1,189 @@
+# Indoor room with walls on three sides — second session, carried-object study.
+#
+# Same physical room, same sensor mounting and the same frozen configuration as
+# `locA_indoor_3wall`. What changes is the target: this session varies the
+# *human condition* rather than the trajectory. Three people walk the same two
+# geometries at one pace, empty-handed and then carrying each of four things,
+# so the object is the only factor moving between blocks.
+#
+# The first indoor session covered trajectory and speed (approach / depart /
+# diagonal at 2, 4 and 6 m, slow / normal / fast). None of that is repeated
+# here. Everything below is at a normal walking pace on the centre line,
+# because holding pace and path fixed is what makes the object comparable.
+#
+# ---------------------------------------------------------------------------
+# SUBJECTS
+# ---------------------------------------------------------------------------
+#     p1 = Bernard      p2 = Aish      p3 = Meghana
+#
+# The same three people, under the same IDs, as the recorded locA session. Keep
+# the mapping identical in the logbook: `campaign_report.py` counts distinct
+# subject IDs per class, and a person recorded under two IDs would report as two
+# people who each did half the work.
+#
+# ---------------------------------------------------------------------------
+# WHY EACH CONDITION IS ITS OWN CLASS
+# ---------------------------------------------------------------------------
+# A training script can merge `umbup`, `umbfwd`, `umbback`, `bag`, `canehand`
+# and `ped` into one pedestrian class with a six-line mapping. It cannot undo
+# the merge once the labels are gone. So the condition travels in the class slot
+# of the filename, where it survives being copied to another machine, and the
+# decision of whether a person under an umbrella is "a pedestrian" is left to
+# whoever trains the network rather than being made here with a note column.
+#
+# Consequence to expect and not be alarmed by: `campaign_report.py` will list
+# each of these at 15–21 passes against its 100-per-class target and call them
+# short. The target applies to the class you train on. Merged into `ped`, this
+# session contributes 96 pedestrian passes on top of the 66 already recorded.
+#
+# Second consequence: this is a second session folder in the SAME room, so the
+# report's "at least two locations" check will now pass on two indoor folders.
+# It should not be believed. The two-location requirement is still unmet until
+# the outdoor set exists, and the held-out test location must be outdoors.
+#
+# `canehand` is deliberately NOT called `cane`. `cane` in the outdoor plan means
+# a mobility cane being *used* — planted and swung at a rate unrelated to the
+# legs, which is the whole reason it earns a class. Here the cane is only
+# carried, which is much closer to a bare walker holding a stick. Filing both
+# under one label would put two different signatures in one class. If you decide
+# the two are the same thing, rename this class — do not re-record.
+#
+# ---------------------------------------------------------------------------
+# THE UMBRELLA IS THE POINT OF THIS SESSION
+# ---------------------------------------------------------------------------
+# An open umbrella is a large, near-rigid, slowly-moving reflector held directly
+# over the gait it is supposed to hide. Tilted toward the sensor its canopy
+# occludes torso and legs, and what is left is a strong return with very little
+# micro-Doppler — which is what background looks like. Tilted away, the walker is
+# exposed and the canopy contributes its own near-zero-Doppler component.
+#
+# So the three poses are not three takes of one thing; they bracket the range
+# between "gait fully visible" and "gait fully occluded", and they are the most
+# likely way a real pedestrian detector fails in the rain.
+#
+# TILT IS DEFINED RELATIVE TO THE WALKER, NOT THE SENSOR. Forward means tilted
+# in the direction of travel. On an approach that points the canopy at the
+# sensor; on a depart the same pose points it away. That is intentional — the
+# pose is what the person does, and the geometry column already records which
+# way they were walking. Do not "correct" the tilt on depart passes.
+#
+# ---------------------------------------------------------------------------
+# PROPS: ONE OF EACH, FOR THE WHOLE SESSION
+# ---------------------------------------------------------------------------
+# One umbrella, one bag, one cane, used by all three subjects. Swapping props
+# mid-session turns the object into a per-person factor and makes the three
+# subjects incomparable. Write the make and size of each into the logbook —
+# canopy diameter especially, since it sets the reflector area.
+
+location: locA2_indoor_objects
+description: >-
+  Indoor room, walls on three sides, sensor at the closed end firing along the
+  open axis at 1.0 m height. Identical mounting, height and frozen config to the
+  locA_indoor_3wall session. Floor taped at 1, 2, 4 and 6 m on the centre line.
+  Subjects walk the centre line at a normal pace, empty-handed or carrying one
+  prop. Record the prop dimensions, which hand carried it, and each subject's
+  clothing in the logbook.
+
+subjects: [p1, p2, p3]
+
+# One pace only. The trajectory-and-speed sweep was the first session's job;
+# repeating it here would multiply the cells instead of the objects.
+durations:
+  normal: 20
+
+classes:
+  # ---------------------------------------------------------------- background
+  # Four rows, run first, before anyone has walked through the space.
+  #
+  # The two empty takes are not padding: this is a different day in the same
+  # room, and furniture, doors and the HVAC state will not be exactly what they
+  # were. Two minutes of empty room is what lets you prove afterwards that the
+  # clutter floor did not move between sessions.
+  #
+  # `umbstand` is the confuser this class set most needs. Someone standing still
+  # under an open umbrella is a big bright reflector with no gait at all, and it
+  # is the case where a detector trained only on walkers under umbrellas will
+  # happily fire at a person waiting at a crossing.
+  - name: bg
+    kind: background
+    blocks:
+      - {source: empty,    distance: 6m, repeats: 2, seconds: 60, note: "Room empty, doors shut, nobody moving. Baseline clutter for this session — compare against locA before trusting anything else here."}
+      - {source: umbstand, distance: 4m, repeats: 2, seconds: 60, note: "Subject stands still on the axis holding the open umbrella upright. Breathing only, no walking."}
+
+  # ------------------------------------------------ pedestrian, nothing carried
+  # The control. Seven takes per subject, more than any single object condition
+  # gets, because every one of the five comparisons below is made against this
+  # one — recorded the same day, in the same room, in the same clothes.
+  #
+  # The already-recorded locA `ped` rows cannot serve this purpose: they are a
+  # different day and a different clutter floor, so any difference between them
+  # and an umbrella take would be unattributable.
+  - name: ped
+    kind: subject
+    blocks:
+      - {geometry: approach, distance: 6m, speed: normal, repeats: 3, note: "Nothing carried, arms swinging freely. Start on the 6 m tape, walk to the 1 m tape, stop."}
+      - {geometry: depart,   distance: 6m, speed: normal, repeats: 2, note: "Nothing carried. Start at the 1 m tape, walk away to the 6 m tape, stop."}
+      - {geometry: approach, distance: 4m, speed: normal, repeats: 1, note: "Nothing carried. Start on the 4 m tape, already walking as you cross it."}
+      - {geometry: depart,   distance: 4m, speed: normal, repeats: 1, note: "Nothing carried. Start at 1 m, walk away to the 4 m tape."}
+
+  # ------------------------------------------- umbrella open, held upright
+  # The neutral pose: canopy roughly level, handle vertical, held over the head
+  # at the usual height. Gait is visible under it and the canopy adds a large
+  # slow-moving return on top.
+  - name: umbup
+    kind: subject
+    blocks:
+      - {geometry: approach, distance: 6m, speed: normal, repeats: 2, note: "Umbrella open, handle vertical, canopy level, held over the head. 6 m tape to 1 m tape."}
+      - {geometry: depart,   distance: 6m, speed: normal, repeats: 1, note: "Umbrella open, upright. 1 m out to the 6 m tape."}
+      - {geometry: approach, distance: 4m, speed: normal, repeats: 1, note: "Umbrella open, upright. From the 4 m tape."}
+      - {geometry: depart,   distance: 4m, speed: normal, repeats: 1, note: "Umbrella open, upright. 1 m out to the 4 m tape."}
+
+  # ------------------------------- umbrella open, tilted forward (rain in face)
+  # Tilted about 30–40 degrees in the direction of travel. On an approach this
+  # puts the canopy between the sensor and the walker: expect a strong return
+  # with the gait largely gone. This is the hardest row in the plan and the one
+  # most worth having.
+  - name: umbfwd
+    kind: subject
+    blocks:
+      - {geometry: approach, distance: 6m, speed: normal, repeats: 2, note: "Umbrella tilted ~30-40 deg FORWARD (in the walking direction) — on approach the canopy faces the sensor and shields the body. Log the angle you used."}
+      - {geometry: depart,   distance: 6m, speed: normal, repeats: 1, note: "Same forward tilt relative to the walker, so the canopy now points away from the sensor. Do not flip it."}
+      - {geometry: approach, distance: 4m, speed: normal, repeats: 1, note: "Forward tilt, from the 4 m tape."}
+      - {geometry: depart,   distance: 4m, speed: normal, repeats: 1, note: "Forward tilt, 1 m out to the 4 m tape."}
+
+  # ---------------------------------- umbrella open, tilted back (wind behind)
+  # The mirror case: canopy tilted about 30–40 degrees away from the walking
+  # direction, torso and legs exposed on an approach.
+  - name: umbback
+    kind: subject
+    blocks:
+      - {geometry: approach, distance: 6m, speed: normal, repeats: 2, note: "Umbrella tilted ~30-40 deg BACKWARD (against the walking direction) — on approach the body stays exposed. Log the angle you used."}
+      - {geometry: depart,   distance: 6m, speed: normal, repeats: 1, note: "Same backward tilt relative to the walker, so the canopy now faces the sensor. Do not flip it."}
+      - {geometry: approach, distance: 4m, speed: normal, repeats: 1, note: "Backward tilt, from the 4 m tape."}
+      - {geometry: depart,   distance: 4m, speed: normal, repeats: 1, note: "Backward tilt, 1 m out to the 4 m tape."}
+
+  # -------------------------------------------------- bag hanging from one hand
+  # A loaded bag damps the swing of the arm carrying it, so the two arms no
+  # longer mirror each other. That asymmetry is the whole feature, and it only
+  # exists if the bag has weight in it — an empty tote proves nothing. Same hand
+  # for every take; note which one.
+  - name: bag
+    kind: subject
+    blocks:
+      - {geometry: approach, distance: 6m, speed: normal, repeats: 2, note: "Loaded bag (2-3 kg) hanging from one hand at the side, arm swinging naturally. Same hand throughout — record which, and the weight."}
+      - {geometry: depart,   distance: 6m, speed: normal, repeats: 1, note: "Bag in the same hand. 1 m out to the 6 m tape."}
+      - {geometry: approach, distance: 4m, speed: normal, repeats: 1, note: "Bag in the same hand, from the 4 m tape."}
+      - {geometry: depart,   distance: 4m, speed: normal, repeats: 1, note: "Bag in the same hand, 1 m out to the 4 m tape."}
+
+  # ---------------------------------------------------- cane carried in the hand
+  # Carried, not used: held in one hand, tip clear of the floor, walking
+  # normally. See the header — this is why the class is not called `cane`. If a
+  # subject starts planting and swinging it, stop and re-record: that is the
+  # outdoor `cane` class and it does not belong in this one.
+  - name: canehand
+    kind: subject
+    blocks:
+      - {geometry: approach, distance: 6m, speed: normal, repeats: 2, note: "Cane CARRIED in one hand, tip off the floor, ordinary gait. Not planted, not swung in step. Same hand throughout."}
+      - {geometry: depart,   distance: 6m, speed: normal, repeats: 1, note: "Cane carried, same hand. 1 m out to the 6 m tape."}
+      - {geometry: approach, distance: 4m, speed: normal, repeats: 1, note: "Cane carried, from the 4 m tape."}
+      - {geometry: depart,   distance: 4m, speed: normal, repeats: 1, note: "Cane carried, 1 m out to the 4 m tape."}

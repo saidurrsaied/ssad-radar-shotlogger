@@ -141,7 +141,7 @@ Graphics
 
 Project files
   [ok  ] frozen config  sha256 cce7ed611cae
-  [ok  ] 2 plan CSV(s): locA_indoor_3wall.csv, locB_outdoor_path.csv
+  [ok  ] 3 plan CSV(s): locA2_indoor_objects.csv, locA_indoor_3wall.csv, locB_outdoor_path.csv
   [ok  ] Exploration Tool temp dir  /home/you/.local/share/acconeer_exptool/plugoneer/temp
 
 Sensor
