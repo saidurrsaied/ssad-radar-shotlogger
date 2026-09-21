@@ -1,5 +1,7 @@
-# Virtual environment -- everyone creates their own, see README.md
+# Virtual environments -- everyone creates their own, see README.md.
+# .venv-ml is the separate training environment from TOOLCHAIN_SETUP.md.
 .venv/
+.venv-ml/
 venv/
 
 # Python
@@ -17,6 +19,19 @@ _logbook.csv
 session.json
 data/
 mes/
+
+# Training. The spectrogram dataset and the raw test-vector input are derived
+# data, rebuilt in about a minute by training/build_dataset.py. The trained
+# model, its C exports, the test vectors and report.json are committed: the
+# embedded port needs them and the pipeline PDF cites them.
+training/out/*.npz
+
+# Teammates' notebooks and the model files they produced. They live in the
+# teammates' own repositories; this repo's model comes from train_binary.py.
+training/Radar_Project.ipynb
+training/ssad.ipynb
+training/pedestrian_model.keras
+training/pedestrian_model.tflite
 
 # OS clutter
 .DS_Store

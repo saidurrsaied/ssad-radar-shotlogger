@@ -1,0 +1,355 @@
+{
+  "config": {
+    "patch": 64,
+    "hop_pos": 4,
+    "hop_neg": 8,
+    "min_active": 25,
+    "event_run": 3,
+    "threshold": 0.5,
+    "seed": 42
+  },
+  "folds": [
+    {
+      "fold": 1,
+      "test_subject": "p1",
+      "best_epoch": 19,
+      "db_floor": 45.65625,
+      "db_ceil": 67.75,
+      "float": {
+        "window": {
+          "windows": 3348,
+          "accuracy": 0.9919354838709677,
+          "recall": 0.9857916102841678,
+          "precision": 0.9958988380041012,
+          "false_positive_rate": 0.0032085561497326204,
+          "auc": 0.9995502666560535,
+          "by_group_correct": {
+            "bg:door": 0.9641,
+            "bg:empty": 1.0,
+            "bg:fan": 1.0,
+            "bg:hvac": 1.0,
+            "bg:operator": 1.0,
+            "bg:standing": 1.0,
+            "bg:trolley": 1.0,
+            "bg:umbrella": 1.0,
+            "bg:umbstand": 1.0,
+            "session:AP:walk": 0.9737,
+            "session:BW:walk": 1.0,
+            "session:S1:bg": 0.9964,
+            "session:S1:walk": 0.9746,
+            "session:S2:bg": 1.0,
+            "session:S2:walk": 0.9984,
+            "walk:bag": 1.0,
+            "walk:canehand": 0.9896,
+            "walk:ped": 0.9792,
+            "walk:umbback": 1.0,
+            "walk:umbfwd": 1.0,
+            "walk:umbup": 0.9902
+          }
+        },
+        "recording": {
+          "walks_detected": 58,
+          "walks": 58,
+          "faint_walks_detected": 5,
+          "faint_walks": 6,
+          "detection_by_session": {
+            "AP": "5/5",
+            "BW": "4/4",
+            "S1": "20/20",
+            "S2": "29/29"
+          },
+          "missed": [],
+          "false_alarms": 2,
+          "background_minutes": 10.48,
+          "false_alarms_per_minute": 0.191
+        }
+      },
+      "int8": {
+        "window": {
+          "windows": 3348,
+          "accuracy": 0.9907407407407407,
+          "recall": 0.983085250338295,
+          "precision": 0.995887594242632,
+          "false_positive_rate": 0.0032085561497326204,
+          "auc": 0.9995081154617094,
+          "by_group_correct": {
+            "bg:door": 0.9641,
+            "bg:empty": 1.0,
+            "bg:fan": 1.0,
+            "bg:hvac": 1.0,
+            "bg:operator": 1.0,
+            "bg:standing": 1.0,
+            "bg:trolley": 1.0,
+            "bg:umbrella": 1.0,
+            "bg:umbstand": 1.0,
+            "session:AP:walk": 0.9737,
+            "session:BW:walk": 1.0,
+            "session:S1:bg": 0.9964,
+            "session:S1:walk": 0.969,
+            "session:S2:bg": 1.0,
+            "session:S2:walk": 0.9984,
+            "walk:bag": 1.0,
+            "walk:canehand": 0.9896,
+            "walk:ped": 0.9746,
+            "walk:umbback": 1.0,
+            "walk:umbfwd": 1.0,
+            "walk:umbup": 0.9902
+          }
+        },
+        "recording": {
+          "walks_detected": 58,
+          "walks": 58,
+          "faint_walks_detected": 5,
+          "faint_walks": 6,
+          "detection_by_session": {
+            "AP": "5/5",
+            "BW": "4/4",
+            "S1": "20/20",
+            "S2": "29/29"
+          },
+          "missed": [],
+          "false_alarms": 2,
+          "background_minutes": 10.48,
+          "false_alarms_per_minute": 0.191
+        }
+      },
+      "int8_vs_float_agreement": 0.998805256869773
+    },
+    {
+      "fold": 2,
+      "test_subject": "p2",
+      "best_epoch": 26,
+      "db_floor": 45.65625,
+      "db_ceil": 69.0,
+      "float": {
+        "window": {
+          "windows": 3013,
+          "accuracy": 0.9960172585462994,
+          "recall": 0.9894086496028244,
+          "precision": 1.0,
+          "false_positive_rate": 0.0,
+          "auc": 0.9999981221009934,
+          "by_group_correct": {
+            "bg:door": 1.0,
+            "bg:empty": 1.0,
+            "bg:fan": 1.0,
+            "bg:hvac": 1.0,
+            "bg:operator": 1.0,
+            "bg:standing": 1.0,
+            "bg:trolley": 1.0,
+            "bg:umbrella": 1.0,
+            "bg:umbstand": 1.0,
+            "session:AP:walk": 1.0,
+            "session:BW:walk": 1.0,
+            "session:S1:bg": 1.0,
+            "session:S1:walk": 0.9724,
+            "session:S2:bg": 1.0,
+            "session:S2:walk": 0.9983,
+            "walk:bag": 1.0,
+            "walk:canehand": 0.9957,
+            "walk:ped": 0.9793,
+            "walk:umbback": 1.0,
+            "walk:umbfwd": 1.0,
+            "walk:umbup": 1.0
+          }
+        },
+        "recording": {
+          "walks_detected": 60,
+          "walks": 61,
+          "faint_walks_detected": 2,
+          "faint_walks": 3,
+          "detection_by_session": {
+            "AP": "4/4",
+            "BW": "5/5",
+            "S1": "19/20",
+            "S2": "32/32"
+          },
+          "missed": [
+            "S1/ped/ped_approach_4m_fast_p2_take1.h5"
+          ],
+          "false_alarms": 0,
+          "background_minutes": 10.54,
+          "false_alarms_per_minute": 0.0
+        }
+      },
+      "int8": {
+        "window": {
+          "windows": 3013,
+          "accuracy": 0.9960172585462994,
+          "recall": 0.9894086496028244,
+          "precision": 1.0,
+          "false_positive_rate": 0.0,
+          "auc": 0.9999971831514901,
+          "by_group_correct": {
+            "bg:door": 1.0,
+            "bg:empty": 1.0,
+            "bg:fan": 1.0,
+            "bg:hvac": 1.0,
+            "bg:operator": 1.0,
+            "bg:standing": 1.0,
+            "bg:trolley": 1.0,
+            "bg:umbrella": 1.0,
+            "bg:umbstand": 1.0,
+            "session:AP:walk": 1.0,
+            "session:BW:walk": 1.0,
+            "session:S1:bg": 1.0,
+            "session:S1:walk": 0.9724,
+            "session:S2:bg": 1.0,
+            "session:S2:walk": 0.9983,
+            "walk:bag": 1.0,
+            "walk:canehand": 0.9957,
+            "walk:ped": 0.9793,
+            "walk:umbback": 1.0,
+            "walk:umbfwd": 1.0,
+            "walk:umbup": 1.0
+          }
+        },
+        "recording": {
+          "walks_detected": 60,
+          "walks": 61,
+          "faint_walks_detected": 2,
+          "faint_walks": 3,
+          "detection_by_session": {
+            "AP": "4/4",
+            "BW": "5/5",
+            "S1": "19/20",
+            "S2": "32/32"
+          },
+          "missed": [
+            "S1/ped/ped_approach_4m_fast_p2_take1.h5"
+          ],
+          "false_alarms": 0,
+          "background_minutes": 10.54,
+          "false_alarms_per_minute": 0.0
+        }
+      },
+      "int8_vs_float_agreement": 1.0
+    },
+    {
+      "fold": 3,
+      "test_subject": "p3",
+      "best_epoch": 60,
+      "db_floor": 45.6875,
+      "db_ceil": 69.1875,
+      "float": {
+        "window": {
+          "windows": 2885,
+          "accuracy": 0.9875216637781629,
+          "recall": 0.9664804469273743,
+          "precision": 1.0,
+          "false_positive_rate": 0.0,
+          "auc": 0.9999989717297665,
+          "by_group_correct": {
+            "bg:door": 1.0,
+            "bg:empty": 1.0,
+            "bg:hvac": 1.0,
+            "bg:standing": 1.0,
+            "bg:trolley": 1.0,
+            "bg:umbrella": 1.0,
+            "session:AP:walk": 1.0,
+            "session:BW:walk": 1.0,
+            "session:S1:bg": 1.0,
+            "session:S1:walk": 0.9212,
+            "session:S2:bg": 1.0,
+            "session:S2:walk": 1.0,
+            "walk:bag": 1.0,
+            "walk:canehand": 1.0,
+            "walk:ped": 0.937,
+            "walk:umbback": 1.0,
+            "walk:umbfwd": 1.0,
+            "walk:umbup": 1.0
+          }
+        },
+        "recording": {
+          "walks_detected": 58,
+          "walks": 60,
+          "faint_walks_detected": 3,
+          "faint_walks": 4,
+          "detection_by_session": {
+            "AP": "4/4",
+            "BW": "5/5",
+            "S1": "19/21",
+            "S2": "30/30"
+          },
+          "missed": [
+            "S1/ped/ped_approach_6m_slow_p3_take1.h5",
+            "S1/ped/ped_diagonal_4m_fast_p3_take1.h5"
+          ],
+          "false_alarms": 0,
+          "background_minutes": 10.13,
+          "false_alarms_per_minute": 0.0
+        }
+      },
+      "int8": {
+        "window": {
+          "windows": 2885,
+          "accuracy": 0.9885615251299826,
+          "recall": 0.9692737430167597,
+          "precision": 1.0,
+          "false_positive_rate": 0.0,
+          "auc": 0.9999994858648833,
+          "by_group_correct": {
+            "bg:door": 1.0,
+            "bg:empty": 1.0,
+            "bg:hvac": 1.0,
+            "bg:standing": 1.0,
+            "bg:trolley": 1.0,
+            "bg:umbrella": 1.0,
+            "session:AP:walk": 1.0,
+            "session:BW:walk": 1.0,
+            "session:S1:bg": 1.0,
+            "session:S1:walk": 0.9278,
+            "session:S2:bg": 1.0,
+            "session:S2:walk": 1.0,
+            "walk:bag": 1.0,
+            "walk:canehand": 1.0,
+            "walk:ped": 0.9422,
+            "walk:umbback": 1.0,
+            "walk:umbfwd": 1.0,
+            "walk:umbup": 1.0
+          }
+        },
+        "recording": {
+          "walks_detected": 58,
+          "walks": 60,
+          "faint_walks_detected": 3,
+          "faint_walks": 4,
+          "detection_by_session": {
+            "AP": "4/4",
+            "BW": "5/5",
+            "S1": "19/21",
+            "S2": "30/30"
+          },
+          "missed": [
+            "S1/ped/ped_approach_6m_slow_p3_take1.h5",
+            "S1/ped/ped_diagonal_4m_fast_p3_take1.h5"
+          ],
+          "false_alarms": 0,
+          "background_minutes": 10.13,
+          "false_alarms_per_minute": 0.0
+        }
+      },
+      "int8_vs_float_agreement": 0.9989601386481802
+    }
+  ],
+  "final": {
+    "best_epoch": 16,
+    "db_floor": 45.65625,
+    "db_ceil": 68.75,
+    "tflite_bytes": 24976,
+    "params": 19009,
+    "input_scale": 0.003921568859368563,
+    "input_zero_point": -128,
+    "output_scale": 0.00390625,
+    "output_zero_point": -128,
+    "test_vector_probabilities": [
+      0.9961,
+      0.0117
+    ],
+    "test_vector_labels": [
+      1,
+      0
+    ],
+    "test_vector_spec_drift_db": 0.0
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "recordings": 230,
+  "frames": 142178,
+  "by_session": {
+    "S2": 100,
+    "AP": 15,
+    "BW": 15,
+    "S1": 100
+  },
+  "by_class": {
+    "bag": 15,
+    "bg": 38,
+    "canehand": 45,
+    "ped": 87,
+    "umbback": 15,
+    "umbfwd": 15,
+    "umbup": 15
+  },
+  "smooth_frames": 25,
+  "background_max_score_db": 0.274,
+  "threshold_db": 0.549,
+  "background_frames_over_threshold": 0,
+  "walks_with_1s_active": 179,
+  "walks_total": 192,
+  "walks_undetectable": [
+    "S2/canehand/canehand_approach_4m_normal_p3_take1.h5",
+    "S2/canehand/canehand_approach_6m_normal_p1_take1.h5",
+    "S2/canehand/canehand_depart_4m_normal_p1_take1.h5",
+    "S2/canehand/canehand_depart_4m_normal_p3_take1.h5",
+    "S2/canehand/canehand_depart_6m_normal_p1_take1.h5",
+    "AP/canehand/canehand_depart_4m_normal_p2_take1.h5",
+    "AP/canehand/canehand_depart_4m_normal_p3_take1.h5",
+    "BW/canehand/canehand_depart_4m_normal_p1_take1.h5",
+    "S1/ped/ped_approach_4m_slow_p3_take1.h5",
+    "S1/ped/ped_approach_6m_slow_p2_take1.h5",
+    "S1/ped/ped_depart_6m_fast_p2_take1.h5",
+    "S1/ped/ped_diagonal_4m_normal_p1_take2.h5",
+    "S1/ped/ped_diagonal_6m_normal_p1_take1.h5"
+  ],
+  "test_vectors": [
+    "S2/canehand/canehand_approach_4m_normal_p1_take1.h5[144:208]",
+    "S2/bg/bg_empty_6m_na_p0_take1.h5[100:164]"
+  ]
+}

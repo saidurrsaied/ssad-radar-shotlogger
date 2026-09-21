@@ -180,6 +180,15 @@ and it is not reversible afterwards.
 tools/bench_range_check.py
 ```
 
+## After the campaign
+
+Recording is half the project. Training a model on the recordings and running it
+on the ESP32-S3 needs a second toolchain -- TensorFlow, ESP-IDF, TFLite Micro
+and two vendor accounts that are worth registering early because they gate
+everything else. See **[TOOLCHAIN_SETUP.md](TOOLCHAIN_SETUP.md)**.
+
+None of it touches `.venv`, and none of it is needed to record.
+
 ## Running it
 
 Start the Exploration Tool first, connect to the sensor, and **load the frozen
@@ -207,6 +216,7 @@ saving a session elsewhere, troubleshooting — is in the built-in guide. Press
 ```
 README.md                    this file -- install and first run
 BENCH_CHECK.md               hardware procedure, run once before any recording
+TOOLCHAIN_SETUP.md           training and embedded toolchain, for after the campaign
 measurement_plan.html        the indoor measurement plan, with the reasoning
 config/session_config.json   the frozen sensor configuration, shared by everyone
 plans/<location>.yaml        plan definition, one per environment
@@ -215,7 +225,12 @@ shotlogger/                  the application
 shotlogger/manual.md         the user guide (rendered in-app, press F1)
 tools/                       config freeze, shot list generator, install and
                              bench checks, campaign report
-tests/                       58 tests, no hardware required
+training/features.py         radar feature extraction -- also the spec for the C port
+training/build_dataset.py    recordings -> spectrogram dataset (local)
+training/train_binary.py     evaluate, train and export the model (Colab)
+training/out/final/          int8 model, C headers, test vectors
+training/Pedestrian_Radar_Pipeline.pdf   how the whole pipeline works
+tests/                       66 tests, no hardware required
 ```
 
 Recordings are **not** in the repo and should stay that way -- `*.h5`,
