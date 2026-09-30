@@ -108,7 +108,7 @@ usbipd bind   --busid <BUSID>
 usbipd attach --wsl --busid <BUSID>
 ```
 
-`<BUSID>` is the row for the FTDI / XE125 device. Inside WSL the board then shows
+`<BUSID>` is the row for the CP2105 / XE125 device. Inside WSL the board then shows
 up as `/dev/ttyUSB0` and the `dialout` rule applies as on native Linux.
 
 The attachment does not survive unplugging the board or rebooting Windows, so
