@@ -20,8 +20,20 @@ SDK="${ACCONEER_XM125_SDK:-$HOME/acconeer/xm125}"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SOURCE="xm125_frame_streamer.c"
 TARGET="xm125_frame_streamer"
-PORT="${XM125_PORT:-/dev/ttyUSB0}"
 JOBS="${JOBS:-4}"          # ninja/make defaults saturate an 8-core laptop
+FLOW_CONTROL="${FLOW_CONTROL:-0}"
+
+# Find the XE125 by identity, not by number. With the ESP32 also plugged in,
+# /dev/ttyUSB0 is just as likely to be its UART bridge -- and flashing the
+# wrong port is a confusing way to lose an afternoon.
+if [ -n "${XM125_PORT:-}" ]; then
+    PORT="$XM125_PORT"
+else
+    PORT="$(readlink -f /dev/serial/by-id/*XE125*if00* 2>/dev/null || true)"
+    if [ -z "$PORT" ]; then
+        PORT=/dev/ttyUSB0   # nothing identifiable; fall back and let the tool complain
+    fi
+fi
 
 for var in GNU_INSTALL_ROOT STM32CUBE_FW_L4_ROOT; do
     if [ -z "${!var:-}" ]; then
@@ -40,10 +52,14 @@ fi
 # edit here cannot be shadowed by a stale copy inside the SDK.
 ln -sf "$HERE/$SOURCE" "$SDK/Src/applications/$SOURCE"
 
-echo "building $TARGET from $HERE/$SOURCE"
+echo "building $TARGET from $HERE/$SOURCE (flow control $([ "$FLOW_CONTROL" = 1 ] && echo on || echo off))"
+
+# CPPFLAGS is referenced by the SDK's compile rule but never assigned, so it is
+# the one place extra defines can go without clobbering its own CFLAGS.
 make -C "$SDK" -j "$JOBS" \
     TARGETS="$TARGET" \
     "SOURCES_$(echo "$TARGET" | tr '[:lower:]' '[:upper:]')=$SOURCE" \
+    CPPFLAGS="-DSTREAM_FLOW_CONTROL=$FLOW_CONTROL" \
     "$TARGET"
 
 BIN="$SDK/out/$TARGET.bin"
@@ -59,6 +75,7 @@ fi
 
 echo
 echo "flashing $BIN to $PORT"
+echo "  ($(basename "$(readlink -f /dev/serial/by-id/*XE125*if00* 2>/dev/null || echo "$PORT")") — verify this is the XE125, not the ESP32)"
 echo "the module must already be in bootloader mode"
 STM32_Programmer_CLI -c port="$PORT" br=115200 -w "$BIN" 0x08000000 -v
 

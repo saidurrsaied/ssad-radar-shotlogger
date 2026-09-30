@@ -62,7 +62,25 @@ the command line, so **the SDK itself is never modified**.
 ```
 
 Set `ACCONEER_XM125_SDK` if the SDK is not at `~/acconeer/xm125`, `XM125_PORT`
-if the module is not on `/dev/ttyUSB0`, and `JOBS` to change the `-j 4` default.
+to override the port (otherwise the XE125 is found by identity under
+`/dev/serial/by-id/`, which matters once the ESP32 is plugged in too), and
+`JOBS` to change the `-j 4` default.
+
+### Hardware flow control is off by default
+
+The stock UART config uses RTS/CTS and the module pauses when CTS is
+de-asserted. The ESP32 never drives that pin — the XE125's own CP2105 does, and
+it stays powered because the board needs its 1.8 V rail. If nothing holds the
+bridge's port open, its driver may leave RTS de-asserted and **the module would
+stop transmitting**. So the default build ignores CTS and the receiver must keep
+up, which the ESP32 can.
+
+For PC captures, build with it on, or the cp210x driver drops whole 256-byte
+URBs and about a fifth of every frame:
+
+```bash
+FLOW_CONTROL=1 ./build.sh          # and use `stty ... crtscts` when capturing
+```
 
 Current size: **64,896 bytes of the module's 131,072** — 49.5 %, against the
 stock exploration server's 83 %.

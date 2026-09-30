@@ -58,6 +58,27 @@
  * There is no negotiation: both ends are fixed at this rate. */
 #define STREAM_BAUDRATE (2000000U)
 
+/* Hardware flow control. The stock main.c configures USART2 with RTS/CTS, and
+ * the exploration server relies on it: the module pauses when the host
+ * de-asserts CTS.
+ *
+ * For the ESP32 link that is a liability. Only TX and GND are wired, so the
+ * module's CTS is driven by the XE125's on-board CP2105 -- which stays powered
+ * because the board needs its 1.8 V rail. If no process holds the bridge's port
+ * open, its driver may leave RTS de-asserted and the module would stop
+ * transmitting: firmware that works while watched and stalls when it is not.
+ *
+ * So the default is OFF, and the receiver must keep up. The ESP32 has dedicated
+ * UART hardware, DMA and a 16 KB ring buffer, unlike a USB bridge at the mercy
+ * of host scheduling.
+ *
+ * Build with -DSTREAM_FLOW_CONTROL=1 to capture on a PC instead: without it the
+ * cp210x driver drops whole 256-byte URBs and roughly a fifth of every frame
+ * goes missing. See agentContext/embeddedlink.md. */
+#ifndef STREAM_FLOW_CONTROL
+#define STREAM_FLOW_CONTROL 0
+#endif
+
 /* Frames carry no natural delimiter, so each is prefixed with a magic word.
  * It lets the receiver resynchronise on the next frame after any error rather
  * than emitting garbage for ever. Must match RADAR_FRAME_MAGIC in
@@ -139,6 +160,8 @@ static bool uart_set_stream_baudrate(void)
 
 	HAL_UART_DeInit(&EXPLORATION_SERVER_UART_HANDLE);
 	EXPLORATION_SERVER_UART_HANDLE.Init.BaudRate = STREAM_BAUDRATE;
+	EXPLORATION_SERVER_UART_HANDLE.Init.HwFlowCtl =
+	    STREAM_FLOW_CONTROL ? UART_HWCONTROL_RTS_CTS : UART_HWCONTROL_NONE;
 
 	return HAL_UART_Init(&EXPLORATION_SERVER_UART_HANDLE) == HAL_OK;
 }
@@ -331,7 +354,9 @@ int acconeer_main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	printf("streaming %u B/frame at %u baud\n", (unsigned)frame_bytes, (unsigned)STREAM_BAUDRATE);
+	printf("streaming %u B/frame at %u baud, flow control %s\n",
+	       (unsigned)frame_bytes, (unsigned)STREAM_BAUDRATE,
+	       STREAM_FLOW_CONTROL ? "on" : "off");
 
 	if (!uart_set_stream_baudrate())
 	{
