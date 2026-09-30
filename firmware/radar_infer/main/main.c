@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "driver/gpio.h"
 #include "driver/uart.h"
 #include "esp_log.h"
 #include "esp_timer.h"
@@ -29,9 +30,25 @@ static const char *TAG = "radar";
 
 /* ------------------------------------------------------------------- link */
 
-#define RADAR_UART_NUM  UART_NUM_0
-#define RADAR_UART_RX   44 /* U0RXD -- the UART Type-C port, later J2 pin 11 */
-#define RADAR_UART_TX   43 /* unused: the link is listen-only by design */
+/* UART1 on GPIO4, routed through the GPIO matrix.
+ *
+ * The board is an ESP32-S3-LCD-EV-Board, whose EXT_IO header (J5) exposes only
+ * six real GPIOs; the rest of its pins drive the I/O expander. Of those six,
+ * IO4 is the only one that can safely take a radar stream:
+ *
+ *   IO19 / IO20  native USB D-/D+ -- taking them kills the console and flashing
+ *   IO0          BOOT strapping pin -- held low at reset the chip enters the
+ *                download loader instead of running, an ugly intermittent fault
+ *   IO47 / IO48  I2C for the touch panel and I/O expander, level-shifted on v1.5
+ *   IO4          drives the RGB status LED only. Not a strapping pin, and the
+ *                LED merely shows noise while frames arrive.
+ *
+ * UART0 (GPIO43/44) stays wired to the board's CP2102N and is left alone, so
+ * the USB-to-UART port remains usable for anything else.
+ */
+#define RADAR_UART_NUM  UART_NUM_1
+#define RADAR_UART_RX   4                    /* EXT_IO J5 pin 11 */
+#define RADAR_UART_TX   UART_PIN_NO_CHANGE   /* the link is listen-only by design */
 #define RADAR_BAUD      2000000
 #define RADAR_RX_BUFFER (16 * 1024)
 
@@ -146,6 +163,57 @@ static void handle_frame(const radar_sample_t *frame)
 
 /* -------------------------------------------------------------------- link */
 
+/* Probe the receive pin as a plain input before handing it to the UART.
+ *
+ * Three outcomes, three different faults:
+ *   always high  - wire connected to an idle UART line, but no data on it
+ *   always low   - wire on ground, or the far end is holding the line low
+ *   transitions  - data is present, so any silence afterwards is UART config
+ * and "floating" shows up as a low transition count with both levels seen. */
+static void probe_rx_pin(void)
+{
+	const gpio_config_t cfg = {
+	    .pin_bit_mask = 1ULL << RADAR_UART_RX,
+	    .mode         = GPIO_MODE_INPUT,
+	    .pull_up_en   = GPIO_PULLUP_DISABLE,
+	    .pull_down_en = GPIO_PULLDOWN_DISABLE,
+	    .intr_type    = GPIO_INTR_DISABLE,
+	};
+
+	ESP_ERROR_CHECK(gpio_config(&cfg));
+
+	int           last        = gpio_get_level(RADAR_UART_RX);
+	uint32_t      transitions = 0;
+	uint32_t      high        = 0;
+	uint32_t      samples     = 0;
+	const int64_t until       = esp_timer_get_time() + 200000; /* 200 ms */
+
+	while (esp_timer_get_time() < until)
+	{
+		const int now = gpio_get_level(RADAR_UART_RX);
+
+		samples++;
+		high += (now != 0);
+
+		if (now != last)
+		{
+			transitions++;
+			last = now;
+		}
+	}
+
+	ESP_LOGI(TAG, "GPIO%d probe: %lu%% high, %lu transitions in %lu samples over 200 ms",
+	         RADAR_UART_RX, (unsigned long)(high * 100 / samples),
+	         (unsigned long)transitions, (unsigned long)samples);
+
+	if (transitions == 0)
+	{
+		ESP_LOGW(TAG, "  pin is static %s -- %s", high ? "HIGH" : "LOW",
+		         high ? "line idle: connected but nothing transmitting, or wrong wire"
+		              : "wire on GND, or nothing connected and the pin is floating low");
+	}
+}
+
 static void link_init(void)
 {
 	const uart_config_t cfg = {
@@ -164,18 +232,49 @@ static void link_init(void)
 }
 
 /* Block until the magic word has been seen, byte by byte, so a desynchronised
- * stream recovers on the next frame instead of producing garbage for ever. */
+ * stream recovers on the next frame instead of producing garbage for ever.
+ *
+ * While hunting, report progress every few seconds. Silence on this link has
+ * two very different causes that look identical from outside -- no bytes at all
+ * (wiring) versus bytes that never sync (baud, inversion, wrong source) -- and
+ * the byte count separates them immediately. */
 static void wait_for_magic(void)
 {
-	size_t matched = 0;
+	size_t   matched = 0;
+	uint32_t seen    = 0;
+	uint8_t  first[8];
+	size_t   kept    = 0;
+	int64_t  last_report = esp_timer_get_time();
 
 	while (matched < sizeof(FRAME_MAGIC))
 	{
 		uint8_t b;
 
-		if (uart_read_bytes(RADAR_UART_NUM, &b, 1, portMAX_DELAY) != 1)
+		if (uart_read_bytes(RADAR_UART_NUM, &b, 1, pdMS_TO_TICKS(500)) != 1)
 		{
+			if (esp_timer_get_time() - last_report > 3000000)
+			{
+				ESP_LOGW(TAG, "no data on GPIO%d: %lu bytes since boot",
+				         RADAR_UART_RX, (unsigned long)seen);
+				last_report = esp_timer_get_time();
+			}
+
 			continue;
+		}
+
+		seen++;
+		if (kept < sizeof(first))
+		{
+			first[kept++] = b;
+		}
+
+		if (esp_timer_get_time() - last_report > 3000000)
+		{
+			ESP_LOGW(TAG, "%lu bytes but no frame magic yet; first bytes were "
+			              "%02x %02x %02x %02x %02x %02x %02x %02x",
+			         (unsigned long)seen, first[0], first[1], first[2], first[3],
+			         first[4], first[5], first[6], first[7]);
+			last_report = esp_timer_get_time();
 		}
 
 		matched = (b == FRAME_MAGIC[matched]) ? (matched + 1)
@@ -226,8 +325,9 @@ void app_main(void)
 		return;
 	}
 
+	probe_rx_pin();
 	link_init();
-	ESP_LOGI(TAG, "listening on UART%d rx=GPIO%d at %d baud, %d bytes/frame",
+	ESP_LOGI(TAG, "listening on UART%d rx=GPIO%d (EXT_IO J5 pin 11) at %d baud, %d bytes/frame",
 	         RADAR_UART_NUM, RADAR_UART_RX, RADAR_BAUD, RADAR_FRAME_BYTES);
 
 	static radar_sample_t frame[RADAR_FRAME_SAMPLES]; /* 5632 B */

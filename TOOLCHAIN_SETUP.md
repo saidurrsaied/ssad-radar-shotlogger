@@ -360,7 +360,7 @@ built with the same toolchain:
 
 ```bash
 . $HOME/esp/esp-idf/export.sh
-idf.py -C firmware/radar_infer build -j 4      # -j 4: ninja's default pins an 8-core laptop
+CMAKE_BUILD_PARALLEL_LEVEL=4 idf.py -C firmware/radar_infer build   # idf.py has no -j
 idf.py -C firmware/radar_infer -p /dev/ttyACM0 flash monitor
 ```
 
