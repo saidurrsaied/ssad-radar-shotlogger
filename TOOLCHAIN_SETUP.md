@@ -8,6 +8,11 @@ Shot Logger, and the frozen configuration. This covers everything after that —
 training a model on the recordings, quantising it, and running it on the
 ESP32-S3 with the display.
 
+**If you just want a working demo, read `HARDWARE_SETUP.md` instead.** It is the
+practical path — install, build, flash, wire, verify — with the traps that cost
+an hour each. This document explains *why* each tool is the one it is, which is
+what you need when something has to change.
+
 Nothing here is a free choice. The target platform, the runtime and the
 conversion path are all fixed by the project brief (sections 2–4 of
 `radar_classification_getting_started.pdf`), and the tools below are the ones
