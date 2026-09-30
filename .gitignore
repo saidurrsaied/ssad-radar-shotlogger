@@ -36,3 +36,11 @@ training/pedestrian_model.tflite
 # OS clutter
 .DS_Store
 Thumbs.db
+
+# ESP-IDF build products. The firmware source is committed; everything the
+# build or the component manager generates is not.
+firmware/*/build/
+firmware/*/sdkconfig
+firmware/*/sdkconfig.old
+firmware/*/managed_components/
+firmware/*/dependencies.lock

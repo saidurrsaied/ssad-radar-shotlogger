@@ -1,0 +1,13 @@
+# Console moves to USB Serial/JTAG so UART0's pins (GPIO43/44) carry radar
+# frames instead of log text. Flash and monitor over the native USB port.
+CONFIG_ESP_CONSOLE_UART_DEFAULT=n
+CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y
+
+# This chip has 16 MB; the default 2 MB would strand most of it.
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+
+# Inference and a 64-point FFT per frame: favour speed over size.
+CONFIG_COMPILER_OPTIMIZATION_PERF=y
+
+# 1 ms ticks so the UART read timeouts mean what they say.
+CONFIG_FREERTOS_HZ=1000
