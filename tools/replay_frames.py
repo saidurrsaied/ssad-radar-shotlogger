@@ -200,6 +200,70 @@ def run_vectors(args) -> int:
     return 1 if failures else 0
 
 
+def run_capture(args) -> int:
+    """Replay a raw capture taken straight off the XM125's UART.
+
+    The bytes are exactly what the module sent, magic words included, so this
+    is the closest thing to the finished link short of the jumper itself.
+    Frames that arrived short are dropped rather than forwarded.
+    """
+    buf = args.capture.read_bytes()
+    offsets = []
+    i = buf.find(MAGIC)
+    while i != -1:
+        offsets.append(i)
+        i = buf.find(MAGIC, i + 1)
+
+    frame_bytes = 64 * 22 * 4
+    payloads = []
+    for a, b in zip(offsets, offsets[1:] + [len(buf)]):
+        if b - a == len(MAGIC) + frame_bytes:
+            payloads.append(buf[a:b])
+
+    dropped = len(offsets) - len(payloads)
+    print(f"  {args.capture.name}: {len(offsets)} frames, {len(payloads)} intact"
+          + (f", {dropped} short (dropped)" if dropped else ""))
+    if not payloads:
+        print("  nothing to replay")
+        return 1
+
+    if args.limit:
+        payloads = payloads[: args.limit]
+
+    reader = LogReader(args.log_port, echo=args.echo)
+    reader.start()
+    time.sleep(0.5)
+
+    send(args.data_port, args.baud, payloads, args.fps, args.capture.name)
+    time.sleep(1.5)
+    reader.close()
+
+    return report_decisions(reader)
+
+
+def report_decisions(reader) -> int:
+    decisions = sorted(reader.windows.values(), key=lambda w: w["frame"])
+    positives = sum(1 for w in decisions if w["positive"])
+    events = sum(1 for w in decisions if w["detection"])
+
+    print()
+    print(f"  {len(decisions)} windows, {positives} positive, {events} detection event(s)")
+    if decisions:
+        dsp = np.array([w["dsp_us"] for w in decisions])
+        inf = np.array([w["inf_us"] for w in decisions])
+        duty = dsp.max() / 40_000.0 + inf.max() / 160_000.0
+        print(f"  dsp {dsp.mean():.0f} us mean / {dsp.max()} us max")
+        print(f"  inference {inf.mean():.0f} us mean / {inf.max()} us max")
+        print(f"  worst case {duty * 100.0:.1f}% of one core")
+        print()
+        print("  probability over time:")
+        for w in decisions:
+            bar = "#" * int(round(w["p"] * 40))
+            mark = "  <-- DETECTION" if w["detection"] else ""
+            print(f"    t={w['frame'] / 25.0:5.2f}s  p={w['p']:.4f} |{bar:<40}|{mark}")
+    return 0
+
+
 def run_recording(args) -> int:
     import features
 
@@ -244,6 +308,8 @@ def main() -> int:
     src.add_argument("--vectors", nargs="?", const=DEFAULT_VECTORS, type=Path,
                      help="replay training/out/final/test_vectors.npz and check the result")
     src.add_argument("--recording", type=Path, help="replay an Exploration Tool .h5")
+    src.add_argument("--capture", type=Path,
+                     help="replay a raw capture taken off the XM125's UART")
     ap.add_argument("--data-port", required=True, help="serial port wired to GPIO44 (U0RXD)")
     ap.add_argument("--log-port", required=True, help="the board's native USB port")
     ap.add_argument("--baud", type=int, default=2000000)
@@ -255,7 +321,11 @@ def main() -> int:
                     help="do not restart the board first (--vectors needs a fresh boot)")
     args = ap.parse_args()
 
-    return run_vectors(args) if args.vectors else run_recording(args)
+    if args.vectors:
+        return run_vectors(args)
+    if args.capture:
+        return run_capture(args)
+    return run_recording(args)
 
 
 if __name__ == "__main__":
