@@ -11,3 +11,28 @@ CONFIG_COMPILER_OPTIMIZATION_PERF=y
 
 # 1 ms ticks so the UART read timeouts mean what they say.
 CONFIG_FREERTOS_HZ=1000
+
+# The 480x480 GC9503CV sub-board (SUB2). The BSP needs to know which panel.
+CONFIG_BSP_LCD_SUB_BOARD_480_480=y
+
+# The RGB framebuffer is 480*480*2 = 460 KB and only fits in PSRAM. This module
+# is an ESP32-S3-WROOM-1-N16R16V: 16 MB octal PSRAM on IO35-37, which is also
+# why those pins are unavailable as GPIOs.
+CONFIG_SPIRAM=y
+CONFIG_SPIRAM_MODE_OCT=y
+CONFIG_SPIRAM_SPEED_80M=y
+
+# Bounce buffer mode, with the 64-byte cache line it requires.
+#
+# The RGB peripheral streams the whole framebuffer out of PSRAM at pixel-clock
+# rate, and any stall in that stream shifts every following pixel -- the image
+# then walks down and across the panel. A 32-byte cache line alone did not fix
+# it here. Bounce buffer mode stages each band of scanlines in internal RAM, so
+# PSRAM latency can no longer starve the panel mid-frame. It costs CPU, which
+# we can afford: the detector uses about 21 % of one core.
+#
+# These two settings belong together. 64B without bounce buffer is the one
+# combination that drifts, and the BSP warns about it at boot.
+CONFIG_BSP_LCD_RGB_BOUNCE_BUFFER_MODE=y
+CONFIG_BSP_LCD_RGB_BOUNCE_BUFFER_HEIGHT=20
+CONFIG_ESP32S3_DATA_CACHE_LINE_64B=y

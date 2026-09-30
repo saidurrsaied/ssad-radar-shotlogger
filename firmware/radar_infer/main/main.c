@@ -22,11 +22,14 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+#include "radar_display.h"
 #include "radar_features.h"
 #include "radar_model.h"
 #include "radar_selftest.h"
 
 static const char *TAG = "radar";
+
+static void radar_task(void *arg);
 
 /* ------------------------------------------------------------------- link */
 
@@ -67,6 +70,7 @@ static uint32_t ring_head;  /* next row to write */
 static uint32_t ring_count; /* frames seen, saturating at PATCH_FRAMES */
 
 static uint32_t positive_run;
+static bool     detected_state; /* latched, for the display; see handle_frame */
 static uint32_t frames_seen;
 static uint32_t windows_seen;
 static uint32_t events;
@@ -111,6 +115,8 @@ static void handle_frame(const radar_sample_t *frame)
 
 	const int64_t t_dsp = esp_timer_get_time() - t0;
 
+	radar_display_push_column(column_q);
+
 	ring_push(column_q);
 	frames_seen++;
 
@@ -137,12 +143,37 @@ static void handle_frame(const radar_sample_t *frame)
 
 	positive_run = positive ? (positive_run + 1) : 0;
 
+	/* `detection` is an EDGE: true only on the window where the run first
+	 * reaches EVENT_RUN. That is what counts events, and what the evaluation
+	 * in agentContext/binarymodel.md counted. Do not display it -- it is true
+	 * for one 160 ms window and then false again while the person is still
+	 * there. */
 	const bool detection = (positive_run == RADAR_EVENT_RUN);
 
 	if (detection)
 	{
 		events++;
 	}
+
+	/* The STATE, for the screen: latched once the run reaches EVENT_RUN, and
+	 * held until two consecutive negatives. The release hysteresis stops the
+	 * banner flickering at the turns, where radial velocity passes through
+	 * zero and a Doppler detector briefly has nothing to see. Event counting
+	 * above is untouched, so the reported numbers keep their old meaning. */
+	static uint32_t negative_run;
+
+	negative_run = positive ? 0 : (negative_run + 1);
+
+	if (positive_run >= RADAR_EVENT_RUN)
+	{
+		detected_state = true;
+	}
+	else if (negative_run >= 2)
+	{
+		detected_state = false;
+	}
+
+	radar_display_set_status(probability, positive, detected_state);
 
 	windows_seen++;
 
@@ -319,6 +350,8 @@ void app_main(void)
 		ESP_LOGE(TAG, "SELFTEST FAILED -- the C port does not match features.py");
 	}
 
+	radar_display_init(); /* headless if the panel is absent -- not fatal */
+
 	if (!radar_model_init())
 	{
 		ESP_LOGE(TAG, "model init failed");
@@ -326,6 +359,19 @@ void app_main(void)
 	}
 
 	probe_rx_pin();
+	/* The detector runs on core 1, on its own.
+	 *
+	 * The RGB panel's bounce-buffer copying is continuous work on core 0, and
+	 * with the radar loop there too the idle task never ran and the watchdog
+	 * fired. Splitting them gives the display a core and the detector a core,
+	 * which is what a dual-core chip is for. */
+	xTaskCreatePinnedToCore(radar_task, "radar", 8192, NULL, 5, NULL, 1);
+}
+
+static void radar_task(void *arg)
+{
+	(void)arg;
+
 	link_init();
 	ESP_LOGI(TAG, "listening on UART%d rx=GPIO%d (EXT_IO J5 pin 11) at %d baud, %d bytes/frame",
 	         RADAR_UART_NUM, RADAR_UART_RX, RADAR_BAUD, RADAR_FRAME_BYTES);

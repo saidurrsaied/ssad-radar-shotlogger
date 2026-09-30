@@ -2,6 +2,6 @@
 # training/train_binary.py and read straight from where it wrote them, so a
 # retrain cannot leave a stale copy behind in the firmware tree.
 idf_component_register(
-    SRCS "main.c" "radar_features.c" "radar_selftest.c" "radar_model.cc"
+    SRCS "main.c" "radar_features.c" "radar_selftest.c" "radar_model.cc" "radar_display.c"
     INCLUDE_DIRS "." "../../../training/out/final"
     REQUIRES driver esp_timer)
