@@ -44,8 +44,11 @@ them. Do this before any of the installs below.
 A121 SDK: the C libraries for the XM125 and the exploration server firmware
 binary.
 
-**ST account** — for STM32CubeProgrammer, which is the only way to flash the
-XM125 over USB DFU.
+**ST account** — for STM32CubeProgrammer, which is how the XM125 gets flashed.
+Despite the board's button being labelled "DFU", the transport is the STM32's
+**UART bootloader** over the CP2105, not USB DFU: the XM125's own USB is not
+exposed on the XE125. The button drives BOOT0; CubeProgrammer then connects to
+`/dev/ttyUSB0`.
 
 ---
 
@@ -208,8 +211,11 @@ definitions. Give it `-C <some empty parent>` — this one is at
 ## 4. XM125 firmware — check before you flash
 
 The XM125 ships with detector firmware. Streaming Sparse IQ needs the
-**exploration server** firmware instead, flashed over USB DFU with
-STM32CubeProgrammer using the DFU and RESET buttons on the board.
+**exploration server** firmware instead, flashed with STM32CubeProgrammer over
+the **UART bootloader** — hold **DFU**, tap **RESET**, release RESET, release
+DFU, which leaves the STM32 in its built-in bootloader on `/dev/ttyUSB0`.
+(The button is named DFU but drives BOOT0; USB DFU is not involved, because the
+XM125's USB never reaches the XE125's connector. Software user guide §3.2.)
 
 **If the recording campaign is running, this has already been done** — the
 Exploration Tool cannot talk to the board otherwise. Do not reflash a working
@@ -227,7 +233,104 @@ is the same procedure in reverse, but only if you know what to go back to.
 
 ---
 
-## 5. Edge Impulse CLI — only if that track is still live
+## 5. The XM125 side — ARM toolchain, Cube package, programmer
+
+Needed only to build and flash firmware for the radar module itself. The
+ESP32-S3 half does not depend on any of it.
+
+**Use the exact toolchain the SDK was built with.** `~/acconeer/xm125/doc/
+BUILDINFO.txt` and the XM125 Software User Guide §4.2 both name **Arm GNU
+Toolchain 13.3.Rel1**. Install it as a self-contained tree, not from apt:
+
+```bash
+mkdir -p ~/opt && cd ~/opt
+curl -LO https://developer.arm.com/-/media/Files/downloads/gnu/13.3.rel1/binrel/\
+arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi.tar.xz
+tar -xJf arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi.tar.xz
+```
+
+**Why not `apt install gcc-arm-none-eabi`.** Ubuntu ships 13.2.rel1, and the
+SDK's archives are built with fat LTO objects. Its archiver flags locate the
+LTO plugin by searching one directory above `$GNU_INSTALL_ROOT` — which, for an
+apt install, means searching all of `/usr`, where the host x86 plugin can match
+first. With a standalone toolchain tree the search returns exactly one file.
+Check it yourself:
+
+```bash
+find "$GNU_INSTALL_ROOT/.." -name liblto_plugin.so     # expect exactly one hit
+```
+
+**The STM32Cube L4 package** supplies ST's HAL, CMSIS and the startup file; the
+Acconeer SDK deliberately ships without them. The guide names **v1.18.1**.
+GitHub is the better source — tagged, public, no login:
+
+```bash
+cd ~/opt
+git clone --depth 1 --branch v1.18.1 \
+    https://github.com/STMicroelectronics/STM32CubeL4.git STM32Cube_FW_L4_V1.18.1
+cd STM32Cube_FW_L4_V1.18.1
+git submodule update --init --depth 1 \
+    Drivers/STM32L4xx_HAL_Driver Drivers/CMSIS/Device/ST/STM32L4xx
+```
+
+**That submodule step is not optional and is easy to miss.** The HAL and CMSIS
+device files live in separate repositories, so a plain clone looks complete
+while `Drivers/STM32L4xx_HAL_Driver/Src` is empty, and the build fails with
+`No rule to make target 'out/obj/startup_stm32l431xx.o'`. The three BSP
+submodules are not needed.
+
+**STM32CubeProgrammer** comes from st.com behind a login and the SLA0048
+licence. On the product page the per-OS rows in the page source are dead markup;
+use the **Get Software** button, then the OS dropdown — pick **Generic Linux**,
+not Linux Arm. The installer is a Java GUI wizard with a bundled JRE:
+
+```bash
+unzip -q SetupSTM32CubeProgrammer_linux_64.zip -d ~/opt/cubeprog-installer
+cd ~/opt/cubeprog-installer
+sudo -E env DISPLAY="$DISPLAY" XAUTHORITY="$XAUTHORITY" \
+    ./SetupSTM32CubeProgrammer-2.23.0.linux     # install to /opt/st/stm32cubeprogrammer
+sudo cp /opt/st/stm32cubeprogrammer/Drivers/rules/*.rules /etc/udev/rules.d/
+sudo udevadm control --reload-rules && sudo udevadm trigger
+```
+
+Those udev rules cover **ST-LINK only**, which matters for SWD work on J6/J2 but
+not for flashing the XM125 — that path is the UART bootloader and needs only
+`dialout`.
+
+Put both roots in `~/.bashrc`; the SDK reads them by name:
+
+```bash
+export GNU_INSTALL_ROOT="$HOME/opt/arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi/bin"
+export STM32CUBE_FW_L4_ROOT="$HOME/opt/STM32Cube_FW_L4_V1.18.1"
+export PATH="$GNU_INSTALL_ROOT:/opt/st/stm32cubeprogrammer/bin:$PATH"
+```
+
+**Verified 2026-09-30:**
+
+```bash
+$ cd ~/acconeer/xm125 && make -j 4 example_service
+Linking out/example_service.elf
+   text 65,616   data 152   bss 6,824
+$ STM32_Programmer_CLI --version
+STM32CubeProgrammer version: 2.23.0
+```
+
+A Sparse IQ application is **65.8 KB of the module's 128 KB flash and ~7 KB of
+its 64 KB RAM** — half the flash free for streaming logic, where the exploration
+server leaves only 17 %. That is what makes custom XM125 firmware practical; see
+`agentContext/embeddedlink.md`.
+
+**Why not STM32CubeIDE or CubeMX.** CubeProgrammer flashes; CubeIDE is an
+Eclipse IDE with *its own* bundled GCC; CubeMX generates init code. The SDK
+already contains the CubeMX output (`xm125.ioc` plus the generated `main.c` and
+HAL MSP), and its makefile build is the guide's own §4.2 path. Adding CubeIDE
+means a second compiler that does not match the SDK's, and §4.3.1 warns you must
+then exclude most SDK sources or the link fails with multiple definitions. Worth
+installing only for source-level SWD debugging, or for unrelated STM32 work.
+
+---
+
+## 6. Edge Impulse CLI — only if that track is still live
 
 ```bash
 npm install -g edge-impulse-cli
@@ -301,8 +404,9 @@ kit exists for this exact task.
 
 Accounts, in advance:
 
-- [ ] Acconeer developer account registered, A121 SDK downloaded
-- [ ] ST account registered, STM32CubeProgrammer installed
+- [x] Acconeer developer account registered, A121 SDK downloaded — 2026-09-29,
+      unpacked at `~/acconeer/` **outside the repo**: the licence forbids publishing it
+- [x] ST account registered, STM32CubeProgrammer installed — 2.23.0, 2026-09-30
 
 PC, training side — **superseded: the model was trained on Google Colab** (the
 `colab` CLI, see `agentContext/binarymodel.md`), so no local TensorFlow was ever
@@ -324,9 +428,21 @@ PC, embedded side (all verified 2026-09-29):
 - [x] ESP-IDF `hello_world` builds, flashes and runs on the S3 — `/dev/ttyACM0`
 - [x] `esp-tflite-micro` added to a project and its `hello_world` runs — 1.4.1
 
+PC, XM125 side (verified 2026-09-30):
+
+- [x] Arm GNU Toolchain 13.3.Rel1 installed standalone — matches the SDK's BUILDINFO
+- [x] STM32Cube FW L4 v1.18.1 cloned **with the two submodules initialised**
+- [x] `GNU_INSTALL_ROOT`, `STM32CUBE_FW_L4_ROOT` and the programmer on `PATH`
+- [x] `make -j 4 example_service` links — 65.8 KB of 128 KB flash
+- [x] `STM32_Programmer_CLI --version` runs — 2.23.0
+- [ ] XM125 streaming firmware written and flashed
+
 Hardware:
 
-- [ ] XM125 firmware state known and written down
+- [x] XM125 firmware state known and written down — read out 2026-09-30 to
+      `~/acconeer/xm125_backup/`, and **verified byte-identical to Acconeer's
+      stock `acc_exploration_server_a121.bin`** (the rest of the 128 KB is
+      erased). The board carries no local modifications
 - [ ] `tools/check_install.py` still reports the sensor after any firmware work
 
 Deliberately not installed:
